@@ -1,0 +1,3988 @@
+<!DOCTYPE html>
+<html lang="id" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SUPER LUCKY DRAW — Source.crocs</title>
+  <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Outfit:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    @property --ring-angle {
+      syntax: '<angle>';
+      initial-value: 0deg;
+      inherits: false;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── DARK MODE (default) ── */
+    :root, [data-theme="dark"] {
+      --gold:    #00CFFF;
+      --gold-dark: #0099CC;
+      --red:     #00BFFF;
+      --orange:  #7B2FFF;
+      --bg:      #030510;
+      --bg2:     #080D1F;
+      --surface: #0D1530;
+      --border:  rgba(0, 180, 255, 0.18);
+      --text:    #D0EEFF;
+      --muted:   #5A7A9A;
+      --theme-icon: "🌙";
+    }
+
+    /* ── LIGHT MODE ── */
+    [data-theme="light"] {
+      --gold:    #0077CC;
+      --gold-dark: #005FA3;
+      --red:     #0055AA;
+      --orange:  #6A1FCC;
+      --bg:      #EEF4FF;
+      --bg2:     #DDE8FA;
+      --surface: #FFFFFF;
+      --border:  rgba(0, 100, 200, 0.18);
+      --text:    #0A1A3A;
+      --muted:   #5570A0;
+      --theme-icon: "☀️";
+    }
+    [data-theme="light"] body::before {
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(0,100,200,0.06) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(100,0,200,0.05) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(0,150,255,0.03) 0%, transparent 70%);
+    }
+    [data-theme="light"] .watermark-text { color: rgba(0,100,200,0.05); }
+    [data-theme="light"] canvas#wheel {
+      box-shadow:
+        0 0 0 4px rgba(0,120,220,0.25),
+        0 0 0 8px rgba(100,0,200,0.1),
+        0 20px 40px rgba(0,0,0,0.12),
+        0 0 60px rgba(0,120,220,0.12);
+    }
+    [data-theme="light"] .lightning-bg { opacity: 0.3; }
+    [data-theme="light"] .stars .star { background: #0055CC; opacity: 0.15 !important; }
+
+    /* ── THEME TOGGLE BTN ── */
+    .theme-btn {
+      position: fixed;
+      bottom: 64px; left: 16px;
+      z-index: 60;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      transition: all 0.25s;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    .theme-btn:hover { transform: scale(1.1) rotate(15deg); }
+
+    /* ── ANNOUNCEMENT BANNER ── */
+    .announce-bar {
+      width: 100%;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 18px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(255,180,0,0.1), rgba(255,100,0,0.08));
+      border: 1px solid rgba(255,180,0,0.35);
+      animation: fadeDown 0.6s ease both;
+      position: relative;
+    }
+    .announce-bar.show { display: flex; }
+    .announce-icon { font-size: 18px; flex-shrink: 0; }
+    .announce-text { flex: 1; font-size: 13px; font-weight: 600; color: var(--text); line-height: 1.5; }
+    .announce-close {
+      background: none; border: none; color: var(--muted);
+      font-size: 16px; cursor: pointer; padding: 2px 6px;
+      border-radius: 6px; flex-shrink: 0; transition: color 0.2s;
+    }
+    .announce-close:hover { color: var(--text); }
+    [data-theme="light"] .announce-bar {
+      background: linear-gradient(135deg, rgba(255,160,0,0.12), rgba(255,80,0,0.08));
+      border-color: rgba(200,100,0,0.3);
+    }
+
+    /* ── LEADERBOARD ── */
+    .lb-panel {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      animation: fadeUp 0.8s 0.7s ease both;
+    }
+    .lb-header {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .lb-header-left { display: flex; align-items: center; gap: 10px; }
+    .lb-icon {
+      width: 32px; height: 32px; border-radius: 8px;
+      background: linear-gradient(135deg, #FFD700, #FF8C00);
+      display: flex; align-items: center; justify-content: center; font-size: 16px;
+    }
+    .lb-title { font-weight: 700; font-size: 1rem; }
+    .lb-date { font-size: 11px; color: var(--muted); font-weight: 600; }
+    .lb-body { padding: 16px 24px; }
+    .lb-empty { font-size: 12px; color: var(--muted); text-align: center; padding: 12px 0; font-style: italic; }
+    .lb-list { display: flex; flex-direction: column; gap: 6px; }
+    .lb-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+    .lb-row:first-child { border-color: rgba(255,215,0,0.3); background: rgba(255,215,0,0.05); }
+    .lb-row:nth-child(2){ border-color: rgba(192,192,192,0.3); background: rgba(192,192,192,0.04); }
+    .lb-row:nth-child(3){ border-color: rgba(205,127,50,0.3);  background: rgba(205,127,50,0.04); }
+    .lb-rank { font-family: 'Black Han Sans', sans-serif; font-size: 15px; min-width: 24px; text-align:center; }
+    .lb-row:first-child  .lb-rank { color: #FFD700; }
+    .lb-row:nth-child(2) .lb-rank { color: #C0C0C0; }
+    .lb-row:nth-child(3) .lb-rank { color: #CD7F32; }
+    .lb-name  { flex: 1; font-size: 13px; font-weight: 700; color: var(--text); }
+    .lb-prize { font-size: 12px; font-weight: 600; color: var(--gold); }
+    .lb-time  { font-size: 10px; color: var(--muted); font-family: monospace; }
+    .lb-me    { font-size: 10px; font-weight: 700; letter-spacing: 0.08em;
+                color: #00C853; background: rgba(0,200,83,0.12);
+                border: 1px solid rgba(0,200,83,0.25); border-radius: 10px; padding: 2px 7px; }
+
+    /* Admin: pesan custom */
+    .admin-announce-section { margin-bottom: 4px; }
+    .admin-announce-preview {
+      margin-top: 8px; padding: 10px 14px; border-radius: 8px;
+      background: rgba(255,180,0,0.08); border: 1px solid rgba(255,180,0,0.25);
+      font-size: 13px; color: var(--text); line-height: 1.5; display: none;
+    }
+    .admin-announce-preview.show { display: block; }
+    .admin-toggle-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+    .admin-toggle-label { font-size: 12px; color: var(--muted); font-weight: 600; }
+    .toggle-switch {
+      position: relative; width: 40px; height: 22px;
+      background: var(--bg2); border: 1px solid var(--border);
+      border-radius: 11px; cursor: pointer; transition: all 0.3s; flex-shrink: 0;
+    }
+    .toggle-switch.on { background: linear-gradient(135deg, #00CFFF, #7B2FFF); border-color: transparent; }
+    .toggle-knob {
+      position: absolute; top: 2px; left: 2px;
+      width: 16px; height: 16px; border-radius: 50%;
+      background: white; transition: left 0.25s;
+    }
+    .toggle-switch.on .toggle-knob { left: 20px; }
+
+    /* Admin: leaderboard section */
+    .lb-admin-list { display: flex; flex-direction: column; gap: 4px; max-height: 200px; overflow-y: auto; }
+    .lb-admin-row {
+      display: flex; align-items: center; gap: 8px;
+      padding: 7px 10px; border-radius: 8px;
+      background: var(--bg2); border: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .lb-admin-rank { min-width: 20px; font-weight: 700; color: var(--gold); }
+    .lb-admin-name { flex: 1; font-weight: 600; }
+    .lb-admin-prize { color: var(--gold); font-size: 11px; }
+    .lb-admin-del {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 14px; padding: 2px 4px; border-radius: 4px;
+    }
+    .lb-admin-del:hover { color: var(--red); }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background:
+        radial-gradient(ellipse 60% 50% at 20% 20%, rgba(0,150,255,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 50% 60% at 80% 80%, rgba(120,0,255,0.07) 0%, transparent 60%),
+        radial-gradient(ellipse 40% 40% at 50% 50%, rgba(0,200,255,0.04) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ── LIGHTNING BOLTS BACKGROUND ── */
+    .lightning-bg { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .lightning-bg svg { position: absolute; opacity: 0; }
+    .lb1 { top: -5%;  left: 10%;  animation: lbflash 4.0s 0.5s ease-in-out infinite; }
+    .lb2 { top: -5%;  right: 15%; animation: lbflash 5.0s 1.8s ease-in-out infinite; }
+    .lb3 { top: 30%;  left: -2%;  animation: lbflash 6.0s 3.1s ease-in-out infinite; }
+    .lb4 { top: 10%;  right: -2%; animation: lbflash 4.5s 0.9s ease-in-out infinite; }
+    .lb5 { bottom: 10%; left: 5%; animation: lbflash 7.0s 2.4s ease-in-out infinite; }
+    .lb6 { bottom: 5%; right: 8%; animation: lbflash 5.5s 4.0s ease-in-out infinite; }
+
+    @keyframes lbflash {
+      0%, 85%, 100% { opacity: 0; }
+      87%  { opacity: 0.7;  filter: drop-shadow(0 0  8px #00CFFF); }
+      89%  { opacity: 0.15; }
+      91%  { opacity: 0.6;  filter: drop-shadow(0 0 12px #7B2FFF); }
+      93%  { opacity: 0; }
+    }
+
+    /* ── STARS ── */
+    .stars { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+    .star {
+      position: absolute;
+      width: 2px; height: 2px;
+      background: white;
+      border-radius: 50%;
+      animation: twinkle var(--d) ease-in-out infinite var(--delay);
+    }
+    @keyframes twinkle {
+      0%, 100% { opacity: 0.1; transform: scale(1); }
+      50%       { opacity: 0.8; transform: scale(1.5); }
+    }
+
+    /* ── LAYOUT ── */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 40px;
+    }
+
+    /* ── HEADER ── */
+    .header { text-align: center; animation: fadeDown 0.8s ease both; }
+    .header-badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 16px;
+      background: rgba(0, 207, 255, 0.05);
+    }
+
+    /* BUG FIX: Brace penutup h1 yang hilang telah diperbaiki */
+    h1 {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(2.8rem, 8vw, 5.5rem);
+      line-height: 0.9;
+      background: linear-gradient(135deg, #00CFFF 0%, #7B2FFF 50%, #00CFFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 30px rgba(0, 180, 255, 0.4));
+    }
+
+    .header-sub {
+      margin-top: 12px;
+      color: var(--muted);
+      font-size: 1rem;
+      font-weight: 300;
+      letter-spacing: 0.05em;
+    }
+
+    /* ── GRID ── */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 380px;
+      gap: 40px;
+      width: 100%;
+      align-items: start;
+    }
+    @media (max-width: 820px) {
+      .main-grid { grid-template-columns: 1fr; }
+    }
+
+    /* ── WHEEL ── */
+    .wheel-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 24px;
+      animation: fadeUp 0.8s 0.2s ease both;
+    }
+    .wheel-wrapper {
+      position: relative;
+      width: 380px;
+      height: 380px;
+      max-width: 100%;
+    }
+    .wheel-pointer {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      filter: drop-shadow(0 4px 12px rgba(123, 47, 255, 0.6));
+    }
+    .wheel-pointer svg { width: 36px; height: 42px; }
+
+    canvas#wheel {
+      border-radius: 50%;
+      box-shadow:
+        0 0 0 4px rgba(0, 207, 255, 0.3),
+        0 0 0 8px rgba(123, 47, 255, 0.15),
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        0 0 80px rgba(0, 207, 255, 0.3);
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .spin-btn {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 70px; height: 70px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.05em;
+      color: var(--bg);
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      box-shadow: 0 4px 20px rgba(0, 150, 255, 0.5), 0 0 0 3px rgba(0, 207, 255, 0.3);
+      transition: all 0.2s;
+      z-index: 5;
+    }
+    .spin-btn:hover:not(:disabled) { transform: translate(-50%, -50%) scale(1.08); }
+    .spin-btn:disabled { cursor: not-allowed; opacity: 0.5; }
+
+    /* ── PANEL ── */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      animation: fadeUp 0.8s 0.4s ease both;
+    }
+    .panel-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .panel-icon {
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+    }
+    .panel-title { font-weight: 700; font-size: 1rem; }
+    .panel-body  { padding: 24px; }
+
+    /* ── CONN STATUS ── */
+    .conn-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+      padding: 8px 12px;
+      border-radius: 8px;
+    }
+    .conn-status.ok      { background: rgba(0,200,83,0.08);   color: #00C853; border: 1px solid rgba(0,200,83,0.2); }
+    .conn-status.error   { background: rgba(123,47,255,0.08); color: var(--red); border: 1px solid rgba(123,47,255,0.2); }
+    .conn-status.loading { background: rgba(0,207,255,0.08);  color: var(--gold); border: 1px solid rgba(0,207,255,0.15); }
+    .conn-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+
+    /* ── CODE INPUT ── */
+    .code-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .code-input {
+      width: 100%;
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-family: 'Outfit', monospace;
+      font-size: 1.2rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      color: var(--text);
+      text-transform: uppercase;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .code-input:focus   { border-color: rgba(0,207,255,0.5); box-shadow: 0 0 0 3px rgba(0,207,255,0.08); }
+    .code-input.valid   { border-color: #00C853; }
+    .code-input.invalid { border-color: var(--red); }
+
+    .code-feedback {
+      margin-top: 8px;
+      font-size: 12px;
+      font-weight: 500;
+      min-height: 18px;
+    }
+    .code-feedback.ok      { color: #00C853; }
+    .code-feedback.err     { color: var(--red); }
+    .code-feedback.loading { color: var(--gold); }
+    .code-group { margin-bottom: 16px; }
+
+    /* ── BUTTONS ── */
+    .unlock-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      color: var(--bg);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(0, 150, 255, 0.3);
+    }
+    .unlock-btn:hover:not(:disabled) { transform: translateY(-1px); box-shadow: 0 6px 24px rgba(0,150,255,0.45); }
+    .unlock-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+    /* ── STATUS BADGE ── */
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+    .status-badge.locked   { background: rgba(123,47,255,0.1); color: var(--red);  border: 1px solid rgba(123,47,255,0.2); }
+    .status-badge.unlocked { background: rgba(0,200,83,0.1);   color: #00C853;     border: 1px solid rgba(0,200,83,0.2); }
+    .status-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+
+    /* ── USED CODES ── */
+    .used-codes { margin-top: 20px; padding-top: 20px; border-top: 1px solid var(--border); }
+    .used-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .used-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    .used-chip {
+      font-size: 11px;
+      font-family: monospace;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(123,47,255,0.1);
+      color: var(--red);
+      border: 1px solid rgba(123,47,255,0.2);
+      text-decoration: line-through;
+    }
+
+    /* ── PRIZES ── */
+    .prizes-section { animation: fadeUp 0.8s 0.6s ease both; }
+    .prizes-list { display: flex; flex-direction: column; gap: 8px; }
+    .prize-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 10px;
+      background: var(--bg2);
+      border: 1px solid var(--border);
+    }
+    .prize-color { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+    .prize-name  { flex: 1; font-size: 13px; font-weight: 600; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.8);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(6px);
+    }
+    .modal-overlay.show { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid rgba(0,207,255,0.3);
+      border-radius: 24px;
+      padding: 48px 40px;
+      text-align: center;
+      max-width: 380px;
+      width: 90%;
+      animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+      position: relative;
+      overflow: hidden;
+    }
+    .modal::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at top, rgba(0,207,255,0.08), transparent 60%);
+      pointer-events: none;
+    }
+    @keyframes popIn {
+      from { opacity: 0; transform: scale(0.5) translateY(40px); }
+      to   { opacity: 1; transform: scale(1) translateY(0); }
+    }
+    .modal-emoji  { font-size: 4rem; margin-bottom: 16px; display: block; animation: bounce 0.6s 0.3s ease both; }
+    @keyframes bounce {
+      0%   { transform: scale(0); }
+      60%  { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+    .modal-title  { font-family: 'Black Han Sans', sans-serif; font-size: 1.4rem; color: var(--muted); margin-bottom: 8px; }
+    .modal-result {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 2.2rem;
+      margin-bottom: 8px;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .modal-code  { font-size: 12px; color: var(--muted); margin-bottom: 28px; font-family: monospace; }
+    .modal-close {
+      padding: 12px 32px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      color: var(--bg);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .modal-close:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,150,255,0.4); }
+
+    /* ── CONFETTI CANVAS ── */
+    #confetti { position: fixed; inset: 0; pointer-events: none; z-index: 99; }
+
+    /* ── ADMIN TRIGGER ── */
+    .admin-secret-trigger {
+      position: fixed;
+      bottom: 0; right: 0;
+      width: 48px; height: 48px;
+      z-index: 50;
+      cursor: default;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ── ADMIN LOGIN ── */
+    .admin-login-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+    }
+    .admin-login-overlay.show { display: flex; }
+    .admin-login-box {
+      background: var(--surface);
+      border: 1px solid rgba(0,207,255,0.25);
+      border-radius: 20px;
+      padding: 36px 32px;
+      width: 90%;
+      max-width: 360px;
+      animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+      text-align: center;
+    }
+    .admin-login-icon  { font-size: 2.4rem; margin-bottom: 12px; }
+    .admin-login-title { font-family: 'Black Han Sans', sans-serif; font-size: 1.3rem; color: var(--gold); margin-bottom: 6px; }
+    .admin-login-sub   { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+    .admin-pw-input {
+      width: 100%;
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 1rem;
+      color: var(--text);
+      outline: none;
+      text-align: center;
+      letter-spacing: 0.1em;
+      transition: border-color 0.2s;
+      margin-bottom: 12px;
+    }
+    .admin-pw-input:focus { border-color: rgba(0,207,255,0.5); }
+    .admin-pw-input.wrong { border-color: var(--red); }
+    .admin-pw-err { font-size: 12px; color: var(--red); min-height: 16px; margin-bottom: 12px; }
+    .admin-pw-row { display: flex; gap: 8px; }
+    .admin-pw-btn {
+      flex: 1;
+      padding: 11px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .admin-pw-btn.confirm { background: linear-gradient(135deg, #00CFFF, #7B2FFF); color: var(--bg); }
+    .admin-pw-btn.cancel  { background: var(--bg2); color: var(--muted); border: 1px solid var(--border); }
+
+    /* ── ADMIN MODAL ── */
+    .admin-modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      padding: 20px;
+    }
+    .admin-modal-overlay.show { display: flex; }
+    .admin-modal {
+      background: var(--surface);
+      border: 1px solid rgba(0,207,255,0.2);
+      border-radius: 20px;
+      width: 100%;
+      max-width: 520px;
+      max-height: 80vh;
+      overflow-y: auto;
+      animation: popIn 0.35s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .admin-modal-header {
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      background: var(--surface);
+      z-index: 1;
+    }
+    .admin-modal-title-wrap { display: flex; align-items: center; gap: 10px; }
+    .admin-modal-icon  { font-size: 1.4rem; }
+    .admin-modal-title { font-family: 'Black Han Sans', sans-serif; font-size: 1.1rem; color: var(--gold); }
+    .admin-modal-close { background: none; border: none; color: var(--muted); font-size: 1.2rem; cursor: pointer; padding: 4px 8px; border-radius: 6px; }
+    .admin-modal-close:hover { color: var(--text); }
+    .admin-modal-body { padding: 24px; }
+    .admin-title {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .admin-row { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+    .admin-input {
+      flex: 1;
+      min-width: 120px;
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-family: 'Outfit', monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      color: var(--text);
+      text-transform: uppercase;
+      outline: none;
+    }
+    .admin-input:focus { border-color: rgba(0,207,255,0.5); }
+    .admin-btn {
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      color: var(--bg);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .admin-btn:hover { transform: translateY(-1px); }
+    .admin-btn.danger { background: linear-gradient(135deg, #00BFFF, #c0392b); color: white; }
+    .pool-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 10px;
+    }
+    .code-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+    .code-pool-chip {
+      font-size: 11px;
+      font-family: monospace;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      padding: 5px 10px;
+      border-radius: 6px;
+      background: rgba(0,200,83,0.1);
+      color: #00C853;
+      border: 1px solid rgba(0,200,83,0.25);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .code-pool-chip:hover { background: rgba(123,47,255,0.15); color: var(--red); border-color: rgba(123,47,255,0.3); }
+    .hint { font-size: 11px; color: var(--muted); margin-top: 6px; font-style: italic; }
+    .admin-divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+    /* ── KEYFRAMES ── */
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp   { from { opacity: 0; transform: translateY(20px);  } to { opacity: 1; transform: translateY(0); } }
+
+    /* ── S&K OVERLAY ── */
+    .snk-overlay {
+      display: flex;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.92);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      padding: 20px;
+    }
+    .snk-box {
+      background: var(--surface);
+      border: 1px solid rgba(0,207,255,0.25);
+      border-radius: 24px;
+      width: 100%;
+      max-width: 480px;
+      max-height: 90vh;
+      display: flex;
+      flex-direction: column;
+      animation: popIn 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+      overflow: hidden;
+    }
+    .snk-header { padding: 24px 28px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .snk-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--gold);
+      border: 1px solid var(--gold);
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(0,207,255,0.05);
+      margin-bottom: 10px;
+    }
+    .snk-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.6rem;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .snk-subtitle { font-size: 12px; color: var(--muted); margin-top: 4px; }
+    .snk-scroll-wrap { position: relative; flex: 1; overflow: hidden; }
+    .snk-body {
+      padding: 20px 28px;
+      overflow-y: auto;
+      height: 100%;
+      max-height: 340px;
+      font-size: 13px;
+      line-height: 1.8;
+      color: var(--text);
+    }
+    .snk-body h3 {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin: 18px 0 8px;
+    }
+    .snk-body h3:first-child { margin-top: 0; }
+    .snk-body p  { color: #C8BCA8; margin-bottom: 8px; }
+    .snk-body ol { padding-left: 18px; color: #C8BCA8; }
+    .snk-body ol li { margin-bottom: 6px; }
+    .snk-scroll-hint {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 48px;
+      background: linear-gradient(to top, var(--surface), transparent);
+      pointer-events: none;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+      padding-bottom: 6px;
+      transition: opacity 0.3s;
+    }
+    .snk-scroll-hint span {
+      font-size: 11px;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      animation: bounce-hint 1.5s ease-in-out infinite;
+    }
+    @keyframes bounce-hint {
+      0%, 100% { transform: translateY(0);    opacity: 1; }
+      50%       { transform: translateY(-4px); opacity: 0.6; }
+    }
+    .snk-footer { padding: 16px 28px 24px; border-top: 1px solid var(--border); flex-shrink: 0; }
+    .snk-check-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .snk-checkbox {
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: var(--bg2);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    .snk-checkbox.checked { background: linear-gradient(135deg, #00CFFF, #7B2FFF); border-color: transparent; }
+    .snk-checkbox svg         { display: none; }
+    .snk-checkbox.checked svg { display: block; }
+    .snk-check-label { font-size: 13px; font-weight: 600; color: var(--text); }
+    .snk-start-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      color: var(--bg);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(0,150,255,0.3);
+    }
+    .snk-start-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,150,255,0.45); }
+    .snk-start-btn:disabled { opacity: 0.35; cursor: not-allowed; transform: none; box-shadow: none; }
+
+    /* ── VOUCHER ── */
+    .voucher-wrap { margin-bottom: 16px; }
+    .voucher {
+      background: linear-gradient(135deg, #05091a 0%, #0a0e2a 50%, #0d1540 100%);
+      border: 1px solid rgba(0,207,255,0.3);
+      border-radius: 16px;
+      padding: 0;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(0,207,255,0.1);
+    }
+    .voucher::before,
+    .voucher::after {
+      content: '';
+      position: absolute;
+      width: 20px; height: 20px;
+      background: var(--bg);
+      border-radius: 50%;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 2;
+    }
+    .voucher::before { left: -10px; }
+    .voucher::after  { right: -10px; }
+    .voucher-top {
+      padding: 16px 24px 12px;
+      border-bottom: 1px dashed rgba(0,207,255,0.2);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .voucher-logo {
+      width: 36px; height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .voucher-brand { text-align: left; }
+    .voucher-brand-name { font-family: 'Black Han Sans', sans-serif; font-size: 14px; color: var(--gold); letter-spacing: 0.05em; }
+    .voucher-brand-sub  { font-size: 10px; color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; }
+    .voucher-body  { padding: 14px 24px; text-align: left; }
+    .voucher-prize-label { font-size: 10px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+    .voucher-prize-name  {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.15rem;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .voucher-bottom {
+      padding: 10px 24px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .voucher-exp-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .voucher-exp-date  { font-size: 12px; font-weight: 700; color: var(--red); font-family: monospace; letter-spacing: 0.05em; margin-top: 2px; }
+    .voucher-code-wrap { text-align: right; }
+    .voucher-code-label { font-size: 10px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .voucher-code-val   { font-size: 13px; font-weight: 700; font-family: monospace; color: var(--text); letter-spacing: 0.12em; margin-top: 2px; }
+    .voucher-dots {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 0 4px;
+    }
+    .voucher-dots span { width: 5px; height: 5px; border-radius: 50%; background: rgba(0,207,255,0.2); }
+
+    /* ── CHECKING OVERLAY ── */
+    .checking-overlay {
+      display: flex;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 1000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(12px);
+    }
+    .checking-box {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+    }
+    .checking-logo  { font-size: 3rem; animation: pulse-logo 1.5s ease-in-out infinite; }
+    @keyframes pulse-logo { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+    .checking-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.8rem;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .checking-status {
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      min-height: 20px;
+      transition: color 0.3s;
+    }
+    .checking-status.loading { color: #00CFFF; }
+    .checking-status.ok      { color: #00C853; }
+    .checking-status.error   { color: #FF4444; }
+    .checking-bar-wrap {
+      width: 200px;
+      height: 4px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .checking-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00CFFF, #7B2FFF);
+      border-radius: 4px;
+      transition: width 3s linear;
+    }
+    .checking-dots { display: flex; gap: 6px; }
+    .checking-dots span {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: rgba(0,207,255,0.3);
+      animation: dot-pulse 1.2s ease-in-out infinite;
+    }
+    .checking-dots span:nth-child(2) { animation-delay: 0.2s; }
+    .checking-dots span:nth-child(3) { animation-delay: 0.4s; }
+    @keyframes dot-pulse {
+      0%, 100% { background: rgba(0,207,255,0.2); transform: scale(1); }
+      50%       { background: #00CFFF; transform: scale(1.3); }
+    }
+    .checking-continue-btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #00C853, #009624);
+      color: white;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: none;
+      box-shadow: 0 4px 16px rgba(0,200,83,0.4);
+    }
+    .checking-continue-btn:hover { transform: translateY(-2px); }
+    .checking-error-btn {
+      padding: 12px 28px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #FF4444, #c0392b);
+      color: white;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: none;
+      box-shadow: 0 4px 16px rgba(255,68,68,0.4);
+      margin-top: 4px;
+    }
+    .checking-error-btn:hover { transform: translateY(-2px); }
+
+    /* ── KONFIRMASI SPIN ── */
+    .confirm-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.75);
+      z-index: 150;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(4px);
+    }
+    .confirm-overlay.show { display: flex; }
+    .confirm-box {
+      background: var(--surface);
+      border: 1px solid rgba(0,207,255,0.3);
+      border-radius: 20px;
+      padding: 36px 32px;
+      text-align: center;
+      max-width: 340px;
+      width: 90%;
+      animation: popIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    .confirm-emoji { font-size: 3rem; margin-bottom: 12px; display: block; }
+    .confirm-title { font-family: 'Black Han Sans', sans-serif; font-size: 1.3rem; color: var(--text); margin-bottom: 8px; }
+    .confirm-sub   { font-size: 13px; color: var(--muted); margin-bottom: 24px; line-height: 1.5; }
+    .confirm-btns  { display: flex; gap: 10px; }
+    .confirm-btn-yes {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      color: var(--bg);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .confirm-btn-yes:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,150,255,0.4); }
+    .confirm-btn-no {
+      flex: 1;
+      padding: 12px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: var(--bg2);
+      color: var(--muted);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .confirm-btn-no:hover { color: var(--text); }
+
+    /* ── EVENT COUNTDOWN ── */
+    .event-banner {
+      width: 100%;
+      text-align: center;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, rgba(0,207,255,0.08), rgba(0,150,255,0.08));
+      border: 1px solid rgba(0,207,255,0.2);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      animation: fadeDown 0.8s ease both;
+    }
+    .event-banner-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+    .event-countdown { display: flex; gap: 8px; align-items: center; }
+    .event-unit { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .event-num {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.4rem;
+      color: var(--gold);
+      line-height: 1;
+      min-width: 36px;
+      text-align: center;
+    }
+    .event-lbl { font-size: 9px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .event-sep { font-family: 'Black Han Sans', sans-serif; font-size: 1.2rem; color: var(--orange); margin-bottom: 10px; }
+
+    /* ── EVENT EXPIRED ── */
+    .expired-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.97);
+      z-index: 2000;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(12px);
+    }
+    .expired-overlay.show { display: flex; }
+    .expired-box {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 16px;
+      padding: 20px;
+    }
+    .expired-emoji { font-size: 5rem; }
+    .expired-title { font-family: 'Black Han Sans', sans-serif; font-size: 2rem; color: var(--red); letter-spacing: 0.05em; }
+    .expired-sub   { font-size: 14px; color: var(--muted); line-height: 1.6; max-width: 320px; }
+    .expired-date  { font-size: 12px; color: var(--muted); font-family: monospace; margin-top: 4px; }
+
+    /* ── WATERMARK ── */
+    .watermark {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+    .watermark-text {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(3rem, 10vw, 7rem);
+      color: rgba(0,207,255,0.03);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      transform: rotate(-30deg);
+      user-select: none;
+      pointer-events: none;
+    }
+
+    /* ── ADMIN STATISTIK ── */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .stat-card.green { border-color: rgba(0,200,83,0.3);   background: rgba(0,200,83,0.05); }
+    .stat-card.red   { border-color: rgba(123,47,255,0.3); background: rgba(123,47,255,0.05); }
+    .stat-card.gold  { border-color: rgba(0,207,255,0.3);  background: rgba(0,207,255,0.05); }
+    .stat-card.blue  { border-color: rgba(52,152,219,0.3); background: rgba(52,152,219,0.05); }
+    .stat-num { font-family: 'Black Han Sans', sans-serif; font-size: 1.6rem; line-height: 1; }
+    .stat-card.green .stat-num { color: #00C853; }
+    .stat-card.red   .stat-num { color: var(--red); }
+    .stat-card.gold  .stat-num { color: var(--gold); }
+    .stat-card.blue  .stat-num { color: #3498DB; }
+    .stat-lbl { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); }
+    .prize-stats { margin-top: 8px; display: flex; flex-direction: column; gap: 6px; margin-bottom: 4px; }
+    .prize-stat-row { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+    .prize-stat-bar-wrap { flex: 1; height: 6px; background: rgba(255,255,255,0.05); border-radius: 3px; overflow: hidden; }
+    .prize-stat-bar { height: 100%; border-radius: 3px; transition: width 0.6s ease; }
+    .prize-stat-label { min-width: 90px; color: var(--text); font-weight: 600; font-size: 11px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .prize-stat-count { min-width: 24px; text-align: right; color: var(--muted); font-weight: 700; font-size: 11px; }
+
+    /* ── FORM NAMA ── */
+    .nama-section { margin-bottom: 16px; }
+    .nama-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .nama-input-wrap { display: flex; gap: 8px; }
+    .nama-input {
+      flex: 1;
+      background: var(--bg2);
+      border: 1.5px solid rgba(0,207,255,0.3);
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-family: 'Outfit', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .nama-input:focus { border-color: rgba(0,207,255,0.6); box-shadow: 0 0 0 3px rgba(0,207,255,0.08); }
+    .nama-input::placeholder { color: var(--muted); font-weight: 400; }
+    .nama-submit-btn {
+      padding: 12px 16px;
+      border: none;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      color: var(--bg);
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+    .nama-submit-btn:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,150,255,0.4); }
+    .nama-submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+    .nama-saved { font-size: 12px; color: #00C853; font-weight: 600; margin-top: 6px; display: none; }
+    .voucher-nama     { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .voucher-nama-val { font-size: 13px; font-weight: 700; color: var(--text); margin-top: 2px; font-family: 'Outfit', sans-serif; }
+
+    /* ── RE-SPIN ── */
+    .respin-section { margin-bottom: 16px; text-align: center; }
+    .respin-badge {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #1ABC9C;
+      border: 1px solid #1ABC9C;
+      padding: 4px 12px;
+      border-radius: 20px;
+      background: rgba(26,188,156,0.08);
+      margin-bottom: 12px;
+    }
+    .respin-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1ABC9C, #16A085);
+      color: white;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 1.05rem;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(26,188,156,0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .respin-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,188,156,0.5); }
+    .respin-sub { font-size: 11px; color: var(--muted); margin-top: 8px; }
+
+    /* ── JACKPOT EFFECT ── */
+    .jackpot-overlay { display: none; position: fixed; inset: 0; z-index: 98; pointer-events: none; }
+    .jackpot-overlay.show { display: block; }
+    .jackpot-rays {
+      position: absolute;
+      inset: 0;
+      background: repeating-conic-gradient(rgba(0,207,255,0.05) 0deg, transparent 10deg, rgba(0,207,255,0.05) 20deg);
+      animation: ray-spin 4s linear infinite;
+    }
+    @keyframes ray-spin { to { transform: rotate(360deg); } }
+    .jackpot-flash {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at center, rgba(0,207,255,0.15), transparent 70%);
+      animation: flash-pulse 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes flash-pulse { from { opacity: 0.3; } to { opacity: 1; } }
+
+    /* ── COPY KODE BTN ── */
+    .copy-code-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      width: 100%;
+      padding: 10px;
+      border: 1px solid rgba(0,207,255,0.3);
+      border-radius: 8px;
+      background: rgba(0,207,255,0.05);
+      color: var(--gold);
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+    }
+    .copy-code-btn:hover  { background: rgba(0,207,255,0.1); border-color: rgba(0,207,255,0.5); }
+    .copy-code-btn.copied { background: rgba(0,200,83,0.1); border-color: rgba(0,200,83,0.3); color: #00C853; }
+
+    /* ── EXPORT CSV BTN ── */
+    .export-btn {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1px solid rgba(52,152,219,0.4);
+      border-radius: 8px;
+      background: rgba(52,152,219,0.08);
+      color: #3498DB;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    .export-btn:hover { background: rgba(52,152,219,0.15); transform: translateY(-1px); }
+
+    /* ── AUDIO CONTROL ── */
+    .audio-btn {
+      position: fixed;
+      bottom: 16px; left: 16px;
+      z-index: 60;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,207,255,0.3);
+      background: rgba(10,10,15,0.8);
+      color: var(--gold);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(8px);
+      transition: all 0.2s;
+    }
+    .audio-btn:hover { background: rgba(0,207,255,0.1); border-color: rgba(0,207,255,0.5); }
+
+    /* ── ELECTRIC BOOST ── */
+    /* Banner notifikasi di atas wheel */
+    .boost-banner {
+      display: none;
+      position: absolute;
+      top: -54px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      background: linear-gradient(135deg, rgba(0,207,255,0.15), rgba(0,100,255,0.2));
+      border: 1px solid rgba(0,207,255,0.6);
+      border-radius: 30px;
+      padding: 7px 18px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: #00EFFF;
+      z-index: 20;
+      box-shadow: 0 0 16px rgba(0,207,255,0.4), inset 0 0 8px rgba(0,207,255,0.1);
+      animation: boostBannerPulse 1s ease-in-out infinite alternate;
+    }
+    .boost-banner.show { display: block; }
+    @keyframes boostBannerPulse {
+      from { box-shadow: 0 0 10px rgba(0,207,255,0.3), inset 0 0 6px rgba(0,207,255,0.1); }
+      to   { box-shadow: 0 0 28px rgba(0,207,255,0.8), inset 0 0 12px rgba(0,207,255,0.2); }
+    }
+    .boost-banner-icon { animation: boltSpin 0.6s linear infinite; display: inline-block; }
+    @keyframes boltSpin { 0%{transform:rotate(-10deg) scale(1)} 50%{transform:rotate(10deg) scale(1.2)} 100%{transform:rotate(-10deg) scale(1)} }
+
+    /* Ring listrik berputar di luar canvas wheel */
+    .electric-ring {
+      display: none;
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .electric-ring.show { display: block; }
+    .electric-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      background: conic-gradient(
+        from var(--ring-angle, 0deg),
+        #00EFFF 0deg, #00CFFF 40deg, transparent 80deg,
+        #7B2FFF 140deg, #00CFFF 180deg, transparent 220deg,
+        #00EFFF 280deg, transparent 360deg
+      ) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      animation: ringRotate 0.3s linear infinite;
+    }
+    .electric-ring::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      box-shadow:
+        0 0 20px 6px rgba(0,207,255,0.35),
+        0 0 40px 10px rgba(0,100,255,0.2),
+        inset 0 0 20px rgba(0,207,255,0.15);
+      animation: ringGlow 0.4s ease-in-out infinite alternate;
+    }
+    @keyframes ringRotate { to { --ring-angle: 360deg; } }
+    @keyframes ringGlow {
+      from { box-shadow: 0 0 14px 4px rgba(0,207,255,0.25), inset 0 0 14px rgba(0,207,255,0.1); }
+      to   { box-shadow: 0 0 36px 12px rgba(0,207,255,0.55), inset 0 0 24px rgba(0,207,255,0.25); }
+    }
+
+    /* Partikel elektrik melayang */
+    .electric-particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #00EFFF;
+      pointer-events: none;
+      z-index: 6;
+      box-shadow: 0 0 6px 2px rgba(0,207,255,0.8);
+      animation: particleFloat var(--pDur) ease-in-out infinite var(--pDelay);
+    }
+    @keyframes particleFloat {
+      0%   { transform: translate(0,0) scale(1);   opacity: 0; }
+      20%  { opacity: 1; }
+      80%  { opacity: 0.7; }
+      100% { transform: translate(var(--pX), var(--pY)) scale(0.2); opacity: 0; }
+    }
+
+    /* Canvas wheel saat boost aktif */
+    .wheel-wrapper.boost-active canvas#wheel {
+      box-shadow:
+        0 0 0 4px rgba(0,207,255,0.7),
+        0 0 0 8px rgba(0,150,255,0.3),
+        0 0 60px rgba(0,207,255,0.6),
+        0 0 100px rgba(0,100,255,0.3);
+      transition: box-shadow 0.3s ease;
+    }
+    /* Spin button saat boost aktif */
+    .spin-btn.boost-active {
+      background: linear-gradient(135deg, #00EFFF, #0080FF);
+      box-shadow:
+        0 4px 20px rgba(0,207,255,0.8),
+        0 0 0 3px rgba(0,207,255,0.5),
+        0 0 30px rgba(0,150,255,0.5);
+      animation: btnElectric 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes btnElectric {
+      from { box-shadow: 0 4px 20px rgba(0,207,255,0.6), 0 0 0 3px rgba(0,207,255,0.4); }
+      to   { box-shadow: 0 4px 30px rgba(0,207,255,1),   0 0 0 4px rgba(0,207,255,0.8), 0 0 40px rgba(0,150,255,0.6); }
+    }
+
+    /* Overlay kilat saat boost spin berlangsung */
+    .boost-flash-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 97;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(0,207,255,0.06), transparent 70%);
+      animation: boostFlashPulse 0.25s ease-in-out infinite alternate;
+    }
+    .boost-flash-overlay.show { display: block; }
+    @keyframes boostFlashPulse {
+      from { opacity: 0.4; }
+      to   { opacity: 1; }
+    }
+
+    /* ── RED ELECTRIC BOOST ── */
+    .red-boost-banner {
+      display: none;
+      position: absolute;
+      top: -54px;
+      left: 50%;
+      transform: translateX(-50%);
+      white-space: nowrap;
+      background: linear-gradient(135deg, rgba(255,30,0,0.2), rgba(255,100,0,0.25));
+      border: 1px solid rgba(255,60,0,0.8);
+      border-radius: 30px;
+      padding: 7px 18px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: #FF6030;
+      z-index: 20;
+      box-shadow: 0 0 16px rgba(255,60,0,0.5), inset 0 0 8px rgba(255,60,0,0.15);
+      animation: redBoostBannerPulse 1s ease-in-out infinite alternate;
+    }
+    .red-boost-banner.show { display: block; }
+    @keyframes redBoostBannerPulse {
+      from { box-shadow: 0 0 10px rgba(255,60,0,0.4), inset 0 0 6px rgba(255,60,0,0.1); }
+      to   { box-shadow: 0 0 32px rgba(255,60,0,0.9), inset 0 0 14px rgba(255,60,0,0.25); }
+    }
+    .red-boost-banner-icon { animation: redBoltSpin 0.6s linear infinite; display: inline-block; }
+    @keyframes redBoltSpin { 0%{transform:rotate(-10deg) scale(1)} 50%{transform:rotate(10deg) scale(1.25)} 100%{transform:rotate(-10deg) scale(1)} }
+
+    /* Ring merah berputar */
+    .red-electric-ring {
+      display: none;
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      z-index: 4;
+      pointer-events: none;
+    }
+    .red-electric-ring.show { display: block; }
+    .red-electric-ring::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      border: 3px solid transparent;
+      background: conic-gradient(
+        from var(--ring-angle, 0deg),
+        #FF6030 0deg, #FF3000 40deg, transparent 80deg,
+        #FF9000 140deg, #FF4020 180deg, transparent 220deg,
+        #FF6030 280deg, transparent 360deg
+      ) border-box;
+      -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
+      -webkit-mask-composite: destination-out;
+      mask-composite: exclude;
+      animation: ringRotate 0.3s linear infinite;
+    }
+    .red-electric-ring::after {
+      content: '';
+      position: absolute;
+      inset: 4px;
+      border-radius: 50%;
+      box-shadow:
+        0 0 20px 6px rgba(255,60,0,0.45),
+        0 0 40px 10px rgba(255,100,0,0.25),
+        inset 0 0 20px rgba(255,60,0,0.18);
+      animation: redRingGlow 0.4s ease-in-out infinite alternate;
+    }
+    @keyframes redRingGlow {
+      from { box-shadow: 0 0 14px 4px rgba(255,60,0,0.3), inset 0 0 14px rgba(255,60,0,0.12); }
+      to   { box-shadow: 0 0 36px 12px rgba(255,60,0,0.7), inset 0 0 24px rgba(255,60,0,0.3); }
+    }
+
+    /* Partikel merah */
+    .red-electric-particle {
+      position: absolute;
+      width: 4px; height: 4px;
+      border-radius: 50%;
+      background: #FF6030;
+      pointer-events: none;
+      z-index: 6;
+      box-shadow: 0 0 6px 2px rgba(255,80,0,0.8);
+      animation: particleFloat var(--pDur) ease-in-out infinite var(--pDelay);
+    }
+
+    /* Canvas wheel saat red boost aktif */
+    .wheel-wrapper.red-boost-active canvas#wheel {
+      box-shadow:
+        0 0 0 4px rgba(255,60,0,0.8),
+        0 0 0 8px rgba(255,100,0,0.35),
+        0 0 60px rgba(255,60,0,0.65),
+        0 0 100px rgba(255,80,0,0.35);
+      transition: box-shadow 0.3s ease;
+    }
+    /* Spin button saat red boost aktif */
+    .spin-btn.red-boost-active {
+      background: linear-gradient(135deg, #FF6030, #FF0000);
+      box-shadow:
+        0 4px 20px rgba(255,60,0,0.85),
+        0 0 0 3px rgba(255,60,0,0.55),
+        0 0 30px rgba(255,80,0,0.5);
+      animation: redBtnElectric 0.5s ease-in-out infinite alternate;
+    }
+    @keyframes redBtnElectric {
+      from { box-shadow: 0 4px 20px rgba(255,60,0,0.65), 0 0 0 3px rgba(255,60,0,0.45); }
+      to   { box-shadow: 0 4px 30px rgba(255,60,0,1),    0 0 0 4px rgba(255,60,0,0.85), 0 0 40px rgba(255,80,0,0.65); }
+    }
+
+    /* Overlay kilat merah saat red boost spin berlangsung */
+    .red-boost-flash-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 97;
+      pointer-events: none;
+      background: radial-gradient(circle at 50% 50%, rgba(255,60,0,0.07), transparent 70%);
+      animation: redBoostFlashPulse 0.25s ease-in-out infinite alternate;
+    }
+    .red-boost-flash-overlay.show { display: block; }
+    @keyframes redBoostFlashPulse {
+      from { opacity: 0.4; }
+      to   { opacity: 1; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- LIGHTNING BACKGROUND -->
+  <div class="lightning-bg">
+    <svg class="lb1" width="80" height="200" viewBox="0 0 80 200"><path d="M50 0 L20 90 L40 90 L10 200 L65 80 L42 80 Z" fill="none" stroke="#00CFFF" stroke-width="2"/></svg>
+    <svg class="lb2" width="60" height="160" viewBox="0 0 60 160"><path d="M40 0 L15 70 L30 70 L5 160 L50 60 L32 60 Z" fill="none" stroke="#7B2FFF" stroke-width="2"/></svg>
+    <svg class="lb3" width="50" height="130" viewBox="0 0 50 130"><path d="M32 0 L12 55 L24 55 L4 130 L40 50 L26 50 Z" fill="none" stroke="#00CFFF" stroke-width="1.5"/></svg>
+    <svg class="lb4" width="70" height="180" viewBox="0 0 70 180"><path d="M45 0 L18 78 L35 78 L8 180 L58 70 L37 70 Z" fill="none" stroke="#00BFFF" stroke-width="2"/></svg>
+    <svg class="lb5" width="55" height="140" viewBox="0 0 55 140"><path d="M35 0 L14 60 L27 60 L6 140 L44 55 L28 55 Z" fill="none" stroke="#7B2FFF" stroke-width="1.5"/></svg>
+    <svg class="lb6" width="65" height="170" viewBox="0 0 65 170"><path d="M42 0 L16 74 L32 74 L7 170 L54 67 L34 67 Z" fill="none" stroke="#00CFFF" stroke-width="2"/></svg>
+  </div>
+
+  <!-- WATERMARK -->
+  <div class="watermark"><div class="watermark-text">SUPER LUCKY DRAW</div></div>
+
+  <!-- EVENT EXPIRED OVERLAY -->
+  <div class="expired-overlay" id="expiredOverlay">
+    <div class="expired-box">
+      <div class="expired-emoji">⏰</div>
+      <div class="expired-title">EVENT BERAKHIR</div>
+      <div class="expired-sub">Maaf, event Super Lucky Draw sudah berakhir.<br>Pantau terus media sosial kami untuk event selanjutnya!</div>
+      <div class="expired-date">Event berlaku hingga: 10 April 2026</div>
+    </div>
+  </div>
+
+  <!-- CHECKING SERVER OVERLAY -->
+  <div class="checking-overlay" id="checkingOverlay">
+    <div class="checking-box">
+      <div class="checking-logo">⚡</div>
+      <div class="checking-title">SUPER LUCKY DRAW</div>
+      <div class="checking-dots">
+        <span></span><span></span><span></span>
+      </div>
+      <div class="checking-bar-wrap">
+        <div class="checking-bar" id="checkingBar"></div>
+      </div>
+      <div class="checking-status loading" id="checkingStatus">⏳ Checking server...</div>
+      <button class="checking-continue-btn" id="checkingContinueBtn" onclick="proceedToSnk()">Lanjutkan →</button>
+      <button class="checking-error-btn"    id="checkingRetryBtn"    onclick="retryChecking()">↺ Coba Lagi</button>
+    </div>
+  </div>
+
+  <!-- S&K OVERLAY -->
+  <div class="snk-overlay" id="snkOverlay" style="display:none;">
+    <div class="snk-box">
+      <div class="snk-header">
+        <div class="snk-badge">📋 Sebelum Bermain</div>
+        <div class="snk-title">Syarat &amp; Ketentuan</div>
+        <div class="snk-subtitle">Baca hingga selesai untuk melanjutkan</div>
+      </div>
+      <div class="snk-scroll-wrap">
+        <div class="snk-body" id="snkBody">
+          <h3>1. Ketentuan Umum</h3>
+          <p>Program Super Lucky Draw ini diselenggarakan oleh Source Crocs sebagai bentuk apresiasi kepada pelanggan setia kami. Dengan berpartisipasi, kamu dianggap telah membaca dan menyetujui seluruh syarat dan ketentuan berikut.</p>
+
+          <h3>2. Syarat Peserta</h3>
+          <ol>
+            <li>Peserta wajib memiliki kode unik yang valid untuk dapat memutar roda.</li>
+            <li>Setiap kode hanya dapat digunakan satu kali dan tidak dapat digunakan ulang.</li>
+            <li>Kode tidak dapat dipindahtangankan kepada orang lain.</li>
+            <li>Peserta wajib memiliki akun WhatsApp aktif untuk proses klaim hadiah.</li>
+          </ol>
+
+          <h3>3. Mekanisme Permainan</h3>
+          <ol>
+            <li>Masukkan kode unik yang kamu miliki pada kolom yang tersedia.</li>
+            <li>Setelah kode terverifikasi, klik tombol SPIN untuk memutar roda.</li>
+            <li>Hasil putaran roda bersifat acak dan tidak dapat diulang.</li>
+            <li>Setiap peserta hanya mendapat satu kali kesempatan spin per kode.</li>
+          </ol>
+
+          <h3>4. ⚡ Electric Boost &amp; 🔥 Red Electric Boost</h3>
+          <p>Sistem ini memberikan kesempatan bonus secara acak kepada peserta saat melakukan spin.</p>
+          <ol>
+            <li><strong>⚡ Electric Boost</strong> — muncul secara acak dengan peluang  32% setiap spin. Saat aktif, peluang mendapatkan hadiah meningkat sekitar +10% dan roda berputar lebih cepat dengan efek biru elektrik.</li>
+            <li><strong>🔥 Red Electric Boost</strong> — muncul secara acak dengan peluang 18% setiap spin dan lebih langka dari Electric Boost biasa. Saat aktif, peluang mendapatkan hadiah meningkat sekitar +20% dengan efek merah-api yang lebih intens.</li>
+            <li>Kedua boost muncul secara otomatis dan tidak dapat dipilih atau diatur oleh peserta.</li>
+            <li>Red Electric Boost diprioritaskan — jika keduanya terpilih dalam satu spin, hanya Red Electric Boost yang aktif.</li>
+            <li>Boost tidak menjamin hadiah tertentu; hasil tetap bersifat acak meskipun peluang meningkat.</li>
+          </ol>
+
+          <h3>5. Klaim Hadiah</h3>
+          <ol>
+            <li>Ambil screenshot layar saat hasil hadiah muncul sebagai bukti.</li>
+            <li>Klik tombol "Klaim via WhatsApp" dan kirim pesan beserta screenshot.</li>
+            <li>Hadiah wajib diklaim dalam waktu 1x24 jam setelah spin dilakukan.</li>
+            <li>Hadiah tidak dapat ditukar dengan uang tunai atau hadiah lainnya.</li>
+            <li>Keputusan penyelenggara bersifat final dan tidak dapat diganggu gugat.</li>
+          </ol>
+
+          <h3>6. Ketentuan Tambahan</h3>
+          <ol>
+            <li>Penyelenggara berhak membatalkan hadiah apabila ditemukan indikasi kecurangan.</li>
+            <li>Penyelenggara tidak bertanggung jawab atas kode yang hilang atau disalahgunakan.</li>
+            <li>Syarat dan ketentuan ini dapat berubah sewaktu-waktu tanpa pemberitahuan sebelumnya.</li>
+          </ol>
+
+          <p style="margin-top:16px; font-size:12px; color:var(--muted); font-style:italic;">Terakhir diperbarui: Juni 2026 · Source Crocs</p>
+        </div>
+        <div class="snk-scroll-hint" id="snkHint">
+          <span>▼ scroll untuk lanjut ▼</span>
+        </div>
+      </div>
+      <div class="snk-footer">
+        <div class="snk-check-row" id="snkCheckRow" onclick="toggleCheck()">
+          <div class="snk-checkbox" id="snkCheckbox">
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path d="M2 6l3 3 5-5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="snk-check-label">Saya setuju dengan persyaratan di atas</span>
+        </div>
+        <button class="snk-start-btn" id="snkStartBtn" disabled onclick="startGame()">⚡ Mulai!</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="stars" id="stars"></div>
+  <canvas id="confetti"></canvas>
+
+  <div class="container">
+    <div class="header">
+      <div class="header-badge">⚡ Special Event</div>
+      <h1>SUPER LUCKY DRAW</h1>
+      <p class="header-sub">⚡ Masukkan kode unikmu untuk memutar roda keberuntungan ⚡</p>
+    </div>
+
+    <!-- EVENT COUNTDOWN BANNER -->
+    <div class="event-banner" id="eventBanner">
+      <span class="event-banner-label">🔥 Event berakhir dalam</span>
+      <div class="event-countdown">
+        <div class="event-unit"><span class="event-num" id="cdDays">--</span><span class="event-lbl">Hari</span></div>
+        <span class="event-sep">:</span>
+        <div class="event-unit"><span class="event-num" id="cdHours">--</span><span class="event-lbl">Jam</span></div>
+        <span class="event-sep">:</span>
+        <div class="event-unit"><span class="event-num" id="cdMins">--</span><span class="event-lbl">Menit</span></div>
+        <span class="event-sep">:</span>
+        <div class="event-unit"><span class="event-num" id="cdSecs">--</span><span class="event-lbl">Detik</span></div>
+      </div>
+    </div>
+
+    <!-- ANNOUNCEMENT BANNER (admin-controlled) -->
+    <div class="announce-bar" id="announceBanner">
+      <span class="announce-icon">📢</span>
+      <div class="announce-text" id="announceText">Selamat datang!</div>
+      <button class="announce-close" onclick="dismissAnnounce()" title="Tutup">✕</button>
+    </div>
+
+    <div class="main-grid">
+      <!-- WHEEL SECTION -->
+      <div class="wheel-section">
+        <div class="wheel-wrapper" id="wheelWrapper">
+          <!-- Banner Electric Boost -->
+          <div class="boost-banner" id="boostBanner">
+            <span class="boost-banner-icon">⚡</span> ELECTRIC BOOST AKTIF! +10% HADIAH
+          </div>
+          <!-- Banner Red Electric Boost -->
+          <div class="red-boost-banner" id="redBoostBanner">
+            <span class="red-boost-banner-icon">🔥</span> RED ELECTRIC BOOST! +20% HADIAH
+          </div>
+          <!-- Ring listrik -->
+          <div class="electric-ring" id="electricRing"></div>
+          <!-- Ring merah -->
+          <div class="red-electric-ring" id="redElectricRing"></div>
+          <!-- Partikel listrik (inject via JS) -->
+          <div id="electricParticles"></div>
+          <div class="wheel-pointer">
+            <svg viewBox="0 0 36 42" fill="none">
+              <path d="M18 42 L0 10 Q18 0 36 10 Z" fill="#00BFFF"/>
+              <path d="M18 38 L4 12 Q18 4 32 12 Z" fill="#66E0FF"/>
+            </svg>
+          </div>
+          <canvas id="wheel" width="500" height="500"></canvas>
+          <button class="spin-btn" id="spinBtn" disabled onclick="startSpin()">SPIN</button>
+        </div>
+      </div>
+
+      <!-- RIGHT PANEL -->
+      <div>
+        <div class="panel">
+          <div class="panel-header">
+            <div class="panel-icon">🔑</div>
+            <div class="panel-title">Masukkan Kode Unik</div>
+          </div>
+          <div class="panel-body">
+            <div class="conn-status loading" id="connStatus">
+              <div class="conn-dot"></div>
+              <span id="connText">⏳ Checking server...</span>
+            </div>
+            <label class="code-label" for="codeInput">Kode Akses</label>
+            <div class="code-group">
+              <input class="code-input" id="codeInput" placeholder="XXXX-XXXX" maxlength="9" autocomplete="off" spellcheck="false"/>
+              <div class="code-feedback" id="codeFeedback"></div>
+            </div>
+            <button class="unlock-btn" id="unlockBtn" onclick="unlockAccess()">🔓 BUKA AKSES SPIN</button>
+            <div class="status-badge locked" id="statusBadge">
+              <div class="status-dot"></div>
+              <span id="statusText">Masukkan kode untuk memulai</span>
+            </div>
+            <div class="used-codes">
+              <div class="used-label">Kode Terpakai (<span id="usedCount">0</span>)</div>
+              <div class="used-list" id="usedList">
+                <span style="font-size:12px;color:var(--muted)">Belum ada kode yang digunakan</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel prizes-section" style="margin-top:16px;">
+          <div class="panel-header">
+            <div class="panel-icon">🏆</div>
+            <div class="panel-title">Daftar Hadiah</div>
+          </div>
+          <div class="panel-body">
+            <div class="prizes-list" id="prizesList"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEADERBOARD PANEL -->
+  <div style="position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 20px 40px;">
+    <div class="lb-panel" id="lbPanel">
+      <div class="lb-header">
+        <div class="lb-header-left">
+          <div class="lb-icon">🏅</div>
+          <div>
+            <div class="lb-title">Leaderboard Pemenang</div>
+            <div class="lb-date" id="lbDate">Hari ini</div>
+          </div>
+        </div>
+      </div>
+      <div class="lb-body">
+        <div class="lb-list" id="lbList">
+          <div class="lb-empty">Belum ada pemenang hari ini. Jadilah yang pertama! 🎯</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ELECTRIC BOOST FLASH OVERLAY -->
+  <div class="boost-flash-overlay" id="boostFlashOverlay"></div>
+  <!-- RED ELECTRIC BOOST FLASH OVERLAY -->
+  <div class="red-boost-flash-overlay" id="redBoostFlashOverlay"></div>
+
+  <!-- AUDIO CONTROL -->
+  <button class="audio-btn" id="audioBtn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+
+  <!-- THEME TOGGLE -->
+  <button class="theme-btn" id="themeBtn" onclick="toggleTheme()" title="Ganti tema">🌙</button>
+
+  <!-- ADMIN TRIGGER (klik sudut kanan bawah 5x) -->
+  <div class="admin-secret-trigger" id="adminTrigger"></div>
+
+  <!-- ADMIN LOGIN -->
+  <div class="admin-login-overlay" id="adminLoginOverlay">
+    <div class="admin-login-box">
+      <div class="admin-login-icon">🔐</div>
+      <div class="admin-login-title">ADMIN ACCESS</div>
+      <div class="admin-login-sub">Masukkan password admin</div>
+      <input class="admin-pw-input" id="adminPwInput" type="password" placeholder="••••••••••"/>
+      <div class="admin-pw-err" id="adminPwErr"></div>
+      <div class="admin-pw-row">
+        <button class="admin-pw-btn confirm" onclick="submitAdminLogin()">Masuk</button>
+        <button class="admin-pw-btn cancel"  onclick="closeAdminLogin()">Batal</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ADMIN PANEL MODAL -->
+  <div class="admin-modal-overlay" id="adminModalOverlay">
+    <div class="admin-modal">
+      <div class="admin-modal-header">
+        <div class="admin-modal-title-wrap">
+          <div class="admin-modal-icon">⚙️</div>
+          <div class="admin-modal-title">PANEL ADMIN</div>
+        </div>
+        <button class="admin-modal-close" onclick="closeAdminModal()">✕</button>
+      </div>
+      <div class="admin-modal-body">
+        <div class="admin-title">📊 Statistik Event</div>
+        <div class="stats-grid">
+          <div class="stat-card gold">
+            <div class="stat-num" id="statTotal">0</div>
+            <div class="stat-lbl">Total Kode</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-num" id="statAvail">0</div>
+            <div class="stat-lbl">Tersedia</div>
+          </div>
+          <div class="stat-card red">
+            <div class="stat-num" id="statUsed">0</div>
+            <div class="stat-lbl">Terpakai</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-num" id="statPct">0%</div>
+            <div class="stat-lbl">Tingkat Pakai</div>
+          </div>
+        </div>
+        <div class="pool-label">Distribusi Hadiah</div>
+        <div class="prize-stats" id="prizeStats">
+          <span style="font-size:12px;color:var(--muted)">Belum ada spin</span>
+        </div>
+        <div class="admin-divider"></div>
+        <div class="admin-title">Kelola Kode Unik</div>
+        <div class="admin-row">
+          <input class="admin-input" id="newCodeInput" placeholder="KODE-BARU" maxlength="9"/>
+          <button class="admin-btn" onclick="adminAddCode()">+ Tambah</button>
+          <button class="admin-btn" onclick="adminGenerateCodes()">⚡ Generate 5</button>
+        </div>
+        <div class="admin-row">
+          <button class="admin-btn danger" onclick="adminResetUsed()">🗑 Reset Kode Terpakai</button>
+        </div>
+        <div class="pool-label" style="margin-top:8px">
+          Kode Tersedia (<span id="availableCount">0</span>) — klik untuk hapus:
+        </div>
+        <div class="code-pool" id="codePool"></div>
+        <div class="hint">💡 Klik chip kode untuk menghapusnya dari daftar</div>
+        <div class="admin-divider"></div>
+        <div class="pool-label">Kode Terpakai (<span id="adminUsedCount">0</span>)</div>
+        <div class="code-pool" id="adminUsedPool"></div>
+        <div class="admin-divider"></div>
+
+        <!-- ADMIN: PENGUMUMAN CUSTOM -->
+        <div class="admin-announce-section">
+          <div class="admin-title">📢 Banner Pengumuman</div>
+          <div class="admin-row" style="flex-direction:column; gap:8px;">
+            <textarea id="announceInput" rows="2"
+              style="width:100%;background:var(--bg2);border:1.5px solid var(--border);border-radius:8px;
+                     padding:10px 14px;font-family:Outfit,sans-serif;font-size:13px;color:var(--text);
+                     outline:none;resize:vertical;min-height:60px;"
+              placeholder="Tulis pesan pengumuman untuk peserta..."></textarea>
+            <div class="admin-toggle-row">
+              <div class="admin-toggle-label">Tampilkan banner:</div>
+              <div class="toggle-switch" id="announceToggle" onclick="toggleAnnounce()">
+                <div class="toggle-knob"></div>
+              </div>
+              <button class="admin-btn" style="padding:8px 14px; font-size:12px;" onclick="saveAnnounce()">💾 Simpan</button>
+            </div>
+          </div>
+          <div class="admin-announce-preview" id="announcePreview"></div>
+          <div class="hint" style="margin-top:4px;">💡 Pesan muncul di bawah countdown event</div>
+        </div>
+
+        <div class="admin-divider"></div>
+
+        <!-- ADMIN: LEADERBOARD MANAGEMENT -->
+        <div class="admin-title">🏅 Leaderboard</div>
+        <div class="admin-row">
+          <button class="admin-btn" onclick="refreshLeaderboard()">↺ Refresh</button>
+          <button class="admin-btn danger" onclick="clearLeaderboard()">🗑 Reset Leaderboard</button>
+        </div>
+        <div class="lb-admin-list" id="lbAdminList">
+          <span style="font-size:12px;color:var(--muted)">Belum ada data</span>
+        </div>
+
+        <div class="admin-divider"></div>
+        <button class="export-btn" onclick="exportCSV()">📥 Export Data ke CSV</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JACKPOT EFFECT -->
+  <div class="jackpot-overlay" id="jackpotOverlay">
+    <div class="jackpot-rays"></div>
+    <div class="jackpot-flash"></div>
+  </div>
+
+  <!-- KONFIRMASI SPIN -->
+  <div class="confirm-overlay" id="confirmOverlay">
+    <div class="confirm-box">
+      <span class="confirm-emoji">🎰</span>
+      <div class="confirm-title">Yakin mau SPIN?</div>
+      <div class="confirm-sub">
+        Kamu hanya punya <strong style="color:var(--gold)">1 kali kesempatan</strong> per kode.<br>
+        Pastikan kamu siap sebelum memutar roda!
+      </div>
+      <div class="confirm-btns">
+        <button class="confirm-btn-no"  onclick="cancelSpin()">Batal</button>
+        <button class="confirm-btn-yes" onclick="confirmSpin()">🎰 SPIN!</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- RESULT MODAL -->
+  <div class="modal-overlay" id="modal">
+    <div class="modal">
+      <span class="modal-emoji"  id="modalEmoji">🎉</span>
+      <div class="modal-title"   id="modalTitle">SELAMAT!</div>
+      <div class="modal-result"  id="modalResult">HADIAH</div>
+      <div class="modal-code"    id="modalCode"></div>
+
+      <!-- ELECTRIC BOOST BADGE -->
+      <div id="modalBoostBadge" style="display:none; align-items:center; justify-content:center; gap:6px;
+           background:linear-gradient(135deg,rgba(0,207,255,0.15),rgba(0,100,255,0.2));
+           border:1px solid rgba(0,207,255,0.5); border-radius:20px; padding:6px 16px;
+           font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+           color:#00EFFF; margin-bottom:14px;
+           box-shadow:0 0 12px rgba(0,207,255,0.3);">
+        ⚡ ELECTRIC BOOST · +10% LUCKY
+      </div>
+
+      <!-- RED ELECTRIC BOOST BADGE -->
+      <div id="modalRedBoostBadge" style="display:none; align-items:center; justify-content:center; gap:6px;
+           background:linear-gradient(135deg,rgba(255,60,0,0.18),rgba(255,100,0,0.22));
+           border:1px solid rgba(255,60,0,0.7); border-radius:20px; padding:6px 16px;
+           font-size:11px; font-weight:700; letter-spacing:0.12em; text-transform:uppercase;
+           color:#FF6030; margin-bottom:14px;
+           box-shadow:0 0 12px rgba(255,60,0,0.4);">
+        🔥 RED ELECTRIC BOOST · +20% LUCKY
+      </div>
+
+      <!-- RE-SPIN SECTION -->
+      <div class="respin-section" id="respinSection" style="display:none;">
+        <div class="respin-badge">🍀 Keberuntunganmu!</div>
+        <button class="respin-btn" onclick="doReSpin()">🔄 Putar Sekali Lagi!</button>
+        <div class="respin-sub">Kode yang sama bisa digunakan 1x lagi</div>
+      </div>
+
+      <!-- WA + VOUCHER SECTION -->
+      <div id="waSection" style="display:none; margin-bottom:16px;">
+        <!-- Form Nama -->
+        <div class="nama-section" id="namaSection">
+          <label class="nama-label">👤 Masukkan nama kamu</label>
+          <div class="nama-input-wrap">
+            <input class="nama-input" id="namaInput" type="text" placeholder="Nama lengkap..." maxlength="40" autocomplete="off"/>
+            <button class="nama-submit-btn" id="namaSubmitBtn" onclick="submitNama()">Simpan</button>
+          </div>
+          <div class="nama-saved" id="namaSaved">✓ Nama tersimpan!</div>
+        </div>
+
+        <!-- Voucher -->
+        <div class="voucher-wrap" id="voucherWrap">
+          <div class="voucher">
+            <div class="voucher-top">
+              <div class="voucher-logo">🎰</div>
+              <div class="voucher-brand">
+                <div class="voucher-brand-name">SUPER LUCKY DRAW</div>
+                <div class="voucher-brand-sub">Spin &amp; Win · Official Voucher</div>
+              </div>
+            </div>
+            <div class="voucher-body">
+              <div class="voucher-prize-label">Hadiah Kamu</div>
+              <div class="voucher-prize-name" id="voucherPrize">—</div>
+            </div>
+            <div class="voucher-dots">
+              <span></span><span></span><span></span><span></span><span></span>
+              <span></span><span></span><span></span><span></span><span></span>
+            </div>
+            <div class="voucher-bottom">
+              <div>
+                <div class="voucher-exp-label">⏳ Berlaku hingga</div>
+                <div class="voucher-exp-date" id="voucherExp">—</div>
+              </div>
+              <div class="voucher-code-wrap">
+                <div class="voucher-nama">👤 Nama</div>
+                <div class="voucher-nama-val" id="voucherNama">—</div>
+              </div>
+            </div>
+            <div style="padding:0 24px 12px; display:flex; justify-content:flex-end;">
+              <div>
+                <div class="voucher-code-label">Kode Spin</div>
+                <div class="voucher-code-val" id="voucherCode">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="font-size:11px; color:var(--muted); margin:8px 0; line-height:1.6; text-align:center;">
+          📸 <strong style="color:var(--text)">Screenshot voucher ini</strong> sebagai bukti, lalu klaim via WhatsApp
+        </div>
+        <button class="copy-code-btn" id="copyCodeBtn" onclick="copyKode()">
+          📋 Salin Kode Spin
+        </button>
+        <a id="waBtn" href="#" target="_blank"
+           style="display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:14px;
+                  border-radius:10px; background:linear-gradient(135deg,#25D366,#128C7E); color:white;
+                  font-family:'Black Han Sans',sans-serif; font-size:1rem; letter-spacing:0.05em;
+                  text-decoration:none; box-shadow:0 4px 16px rgba(37,211,102,0.4); margin-bottom:8px;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
+          Klaim via WhatsApp
+        </a>
+      </div>
+
+      <button class="modal-close" onclick="closeModal()">TUTUP</button>
+    </div>
+  </div>
+
+<script>
+// ═══════════════════════════════════════════════════
+//  ⚠️  GANTI URL INI DENGAN URL DEPLOYMENT APPS SCRIPT
+// ═══════════════════════════════════════════════════
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzB4ntM1qopiYk02rZ1C1Vy1vHfquj9xYg43-ToF7FmtpfQJ0DZDaucwdTURqTH1u6hQ/exec";
+
+// ⚠️  GANTI PASSWORD DAN NOMOR WA SESUAI KEBUTUHAN
+const ADMIN_PASSWORD = 'tegar';
+const WA_NUMBER      = "62895342072060";
+
+// ─── DATA HADIAH ─────────────────────────────────────
+const PRIZES = [
+  { label: "🏆 Crocs Classic Clog 1pcs", color: "#00CFFF", weight: 0,  emoji: "🏆" },
+  { label: "💰 DANA KAGET 30RB",                color: "#7B2FFF", weight: 7,  emoji: "💰" },
+  { label: "🎁 DANA KAGET 20RB",             color: "#00BFFF", weight: 8, emoji: "🎁" },
+  { label: "🎟️ Diskon 30RB",             color: "#9B59B6", weight: 34, emoji: "🎟️" },
+  { label: "😔 Coba Lagi",               color: "#455A64", weight: 51, emoji: "😔" },
+  { label: "🔄 Re-Spin",                 color: "#1ABC9C", weight: 28, emoji: "🔄" },
+];
+
+const TOTAL_WEIGHT      = PRIZES.filter(p => p.weight > 0).reduce((s, p) => s + p.weight, 0);
+const DRAW_PRIZES       = PRIZES.map(p => p.weight === 0 ? { ...p, weight: 4 } : p); // Crocs tetap tampil di roda
+const TOTAL_WEIGHT_DRAW = DRAW_PRIZES.reduce((s, p) => s + p.weight, 0);
+const JACKPOT_LABELS    = ["🏆 Crocs Classic Clog 1pcs"];
+
+// ─── ⚙️  KONFIGURASI BOOST — UBAH DI SINI ─────────────
+// Chance mendapatkan Electric Boost (biru) saat spin: 0.0 – 1.0 (60% default)
+const ELECTRIC_BOOST_CHANCE     = 0.30;
+// Chance mendapatkan Red Electric Boost (merah) saat spin: 0.0 – 1.0 (10% default)
+// Catatan: Red Boost diperiksa LEBIH DULU dari Blue Boost
+const RED_ELECTRIC_BOOST_CHANCE = 0.60;
+// ──────────────────────────────────────────────────────
+
+// ─── ELECTRIC BOOST: +10% weight untuk semua hadiah (kecuali "Coba Lagi") ───
+// Boost menurunkan weight "Coba Lagi" dan naikkan prize lain ~10%
+const PRIZES_BOOST = PRIZES.map(p => {
+  if (p.label === "😔 Coba Lagi") return { ...p, weight: Math.max(1, Math.round(p.weight * 0.5)) };
+  if (p.weight === 0) return p; // Crocs tetap 0 (ditangani DRAW_PRIZES)
+  return { ...p, weight: Math.round(p.weight * 1.22) }; // ~+10% total efektif
+});
+const TOTAL_WEIGHT_BOOST = PRIZES_BOOST.filter(p => p.weight > 0).reduce((s, p) => s + p.weight, 0);
+
+// ─── RED ELECTRIC BOOST: +20% weight untuk semua hadiah (kecuali "Coba Lagi") ───
+// Lebih kuat dari Electric Boost biasa
+const PRIZES_RED_BOOST = PRIZES.map(p => {
+  if (p.label === "😔 Coba Lagi") return { ...p, weight: Math.max(1, Math.round(p.weight * 0.35)) };
+  if (p.weight === 0) return p; // Crocs tetap 0 (ditangani DRAW_PRIZES)
+  return { ...p, weight: Math.round(p.weight * 1.45) }; // ~+20% total efektif
+});
+const TOTAL_WEIGHT_RED_BOOST = PRIZES_RED_BOOST.filter(p => p.weight > 0).reduce((s, p) => s + p.weight, 0);
+
+// ─── STATE ───────────────────────────────────────────
+let validCodes   = new Set();
+let usedCodes    = new Set();
+let isUnlocked   = false;
+let isSpinning   = false;
+let currentCode  = "";
+let currentAngle = 0;
+let isConnected  = false;
+let reSpinCode   = '';
+let pendingNamaCode   = '';
+let pendingNamaHadiah = '';
+let pendingWasBoost   = false;
+let pendingWasRedBoost = false;
+let isBoostActive = false; // Electric Boost state
+let isRedBoostActive = false; // Red Electric Boost state
+
+// ─── SESSION SECURITY ────────────────────────────────
+const sessionUsed = new Set(JSON.parse(sessionStorage.getItem('sessionUsed') || '[]'));
+
+function markSessionUsed(code) {
+  sessionUsed.add(code);
+  sessionStorage.setItem('sessionUsed', JSON.stringify([...sessionUsed]));
+}
+function isSessionUsed(code) {
+  return sessionUsed.has(code);
+}
+
+// ─── RATE LIMITING ───────────────────────────────────
+const rateLimitMap = {};
+function checkRateLimit(action) {
+  const now   = Date.now();
+  const limit = { check: { max: 5, window: 60000 }, use: { max: 3, window: 300000 } };
+  if (!limit[action]) return true;
+  if (!rateLimitMap[action]) rateLimitMap[action] = [];
+  rateLimitMap[action] = rateLimitMap[action].filter(t => now - t < limit[action].window);
+  if (rateLimitMap[action].length >= limit[action].max) return false;
+  rateLimitMap[action].push(now);
+  return true;
+}
+
+// ─── API JSONP ───────────────────────────────────────
+// (Kompatibel dengan Google Apps Script yang tidak support CORS)
+function apiCall(params) {
+  return new Promise((resolve) => {
+    const cbName = 'cb_' + Date.now();
+    params.callback = cbName;
+    const url    = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
+    const script = document.createElement('script');
+
+    const timeout = setTimeout(() => {
+      cleanup();
+      resolve({ success: false, message: 'Timeout' });
+    }, 10000);
+
+    function cleanup() {
+      clearTimeout(timeout);
+      delete window[cbName];
+      if (script.parentNode) document.body.removeChild(script); // BUG FIX: cek parentNode sebelum remove
+    }
+
+    window[cbName] = function(data) {
+      cleanup();
+      resolve(data);
+    };
+
+    script.src = url;
+    script.onerror = () => {
+      cleanup(); // BUG FIX: cleanup juga dipanggil saat error
+      resolve({ success: false, message: 'Script error' });
+    };
+    document.body.appendChild(script);
+  });
+}
+
+// ─── INIT ────────────────────────────────────────────
+async function initCodes() {
+  setConnStatus('loading', '⏳ Checking server Online Or Not...');
+
+  // Trigger progress bar
+  setTimeout(() => { document.getElementById('checkingBar').style.width = '100%'; }, 50);
+
+  // Tampilkan minimal 3 detik
+  const [data] = await Promise.all([
+    apiCall({ action: 'list' }),
+    new Promise(res => setTimeout(res, 3000)),
+  ]);
+
+  if (!data.success) {
+    setConnStatus('error', '❌ Server Disconnected • Check Your Connection');
+    const statusEl = document.getElementById('checkingStatus');
+    statusEl.textContent  = 'Server Disconnected • Try Again';
+    statusEl.className    = 'checking-status error';
+    document.getElementById('checkingBar').style.background = '#FF4444';
+    document.getElementById('checkingRetryBtn').style.display = 'block';
+    return;
+  }
+
+  validCodes  = new Set(data.available);
+  usedCodes   = new Set(data.used);
+  isConnected = true;
+  setConnStatus('ok', '✅ Server Online • Stable');
+
+  const statusEl = document.getElementById('checkingStatus');
+  statusEl.textContent = '✅ Server Online • Stable';
+  statusEl.className   = 'checking-status ok';
+  document.getElementById('checkingBar').style.background = '#00C853';
+
+  setTimeout(proceedToSnk, 800);
+  renderUsedCodes();
+}
+
+function proceedToSnk() {
+  if (checkEventExpired()) return;
+  const el = document.getElementById('checkingOverlay');
+  el.style.transition = 'opacity 0.4s ease';
+  el.style.opacity    = '0';
+  setTimeout(() => {
+    el.style.display = 'none';
+    document.getElementById('snkOverlay').style.display = 'flex';
+  }, 400);
+}
+
+function retryChecking() {
+  const bar    = document.getElementById('checkingBar');
+  const status = document.getElementById('checkingStatus');
+  status.textContent = '⏳ Checking server...';
+  status.className   = 'checking-status loading';
+  bar.style.transition = 'none';
+  bar.style.width      = '0%';
+  bar.style.background = 'linear-gradient(90deg, #00CFFF, #7B2FFF)';
+  document.getElementById('checkingRetryBtn').style.display = 'none';
+  setTimeout(() => {
+    bar.style.transition = 'width 3s linear';
+    initCodes();
+  }, 100);
+}
+
+function setConnStatus(type, text) {
+  document.getElementById('connStatus').className = 'conn-status ' + type;
+  document.getElementById('connText').textContent = text;
+}
+
+// ─── STARS ───────────────────────────────────────────
+(function generateStars() {
+  const container = document.getElementById('stars');
+  for (let i = 0; i < 80; i++) {
+    const s = document.createElement('div');
+    s.className = 'star';
+    s.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;--d:${2+Math.random()*4}s;--delay:${-Math.random()*5}s;opacity:${0.1+Math.random()*0.5}`;
+    container.appendChild(s);
+  }
+})();
+
+// ─── WHEEL ───────────────────────────────────────────
+const wheelCanvas = document.getElementById('wheel');
+const wheelCtx    = wheelCanvas.getContext('2d'); // BUG FIX: ganti nama dari 'ctx' → 'wheelCtx' agar tidak bertabrakan dengan Audio ctx
+
+function drawWheel(angle = 0, boostMode = false, redBoostMode = false) {
+  const W = wheelCanvas.width, H = wheelCanvas.height;
+  const cx = W / 2, cy = H / 2, r = W / 2 - 6;
+  wheelCtx.clearRect(0, 0, W, H);
+  let start = angle;
+
+  // Saat boost: warnai ulang slice menjadi gradasi biru-elektrik
+  // Saat red boost: gradasi merah-api
+  DRAW_PRIZES.forEach(prize => {
+    const slice = (prize.weight / TOTAL_WEIGHT_DRAW) * Math.PI * 2;
+
+    // Fill slice
+    wheelCtx.beginPath();
+    wheelCtx.moveTo(cx, cy);
+    wheelCtx.arc(cx, cy, r, start, start + slice);
+    wheelCtx.closePath();
+    if (redBoostMode) {
+      const hueShift = (DRAW_PRIZES.indexOf(prize) * 20) % 40;
+      const grad2 = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      grad2.addColorStop(0, `hsla(${10 + hueShift}, 100%, 65%, 0.9)`);
+      grad2.addColorStop(1, `hsla(${20 + hueShift}, 100%, 30%, 1)`);
+      wheelCtx.fillStyle = grad2;
+    } else if (boostMode) {
+      // Gradasi biru elektrik tiap segmen dengan variasi hue
+      const hueShift = (DRAW_PRIZES.indexOf(prize) * 25) % 60;
+      const grad2 = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
+      grad2.addColorStop(0, `hsla(${195 + hueShift}, 100%, 60%, 0.9)`);
+      grad2.addColorStop(1, `hsla(${210 + hueShift}, 100%, 30%, 1)`);
+      wheelCtx.fillStyle = grad2;
+    } else {
+      wheelCtx.fillStyle = prize.color;
+    }
+    wheelCtx.fill();
+
+    // Border
+    wheelCtx.strokeStyle = redBoostMode ? 'rgba(255,80,0,0.6)' : (boostMode ? 'rgba(0,220,255,0.5)' : 'rgba(0,0,0,0.3)');
+    wheelCtx.lineWidth   = (boostMode || redBoostMode) ? 3 : 2;
+    wheelCtx.stroke();
+
+    // Gradient overlay (shimmer)
+    const grad = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, r);
+    grad.addColorStop(0, redBoostMode ? 'rgba(255,100,0,0.25)' : (boostMode ? 'rgba(0,255,255,0.25)' : 'rgba(255,255,255,0.15)'));
+    grad.addColorStop(1, 'rgba(0,0,0,0.1)');
+    wheelCtx.beginPath();
+    wheelCtx.moveTo(cx, cy);
+    wheelCtx.arc(cx, cy, r, start, start + slice);
+    wheelCtx.closePath();
+    wheelCtx.fillStyle = grad;
+    wheelCtx.fill();
+
+    // Garis pemisah glowing saat boost
+    if (boostMode || redBoostMode) {
+      wheelCtx.save();
+      wheelCtx.beginPath();
+      wheelCtx.moveTo(cx, cy);
+      wheelCtx.lineTo(cx + Math.cos(start) * r, cy + Math.sin(start) * r);
+      wheelCtx.strokeStyle = redBoostMode ? 'rgba(255,80,0,0.7)' : 'rgba(0,220,255,0.6)';
+      wheelCtx.lineWidth   = 2;
+      wheelCtx.shadowColor = redBoostMode ? '#FF5000' : '#00CFFF';
+      wheelCtx.shadowBlur  = 8;
+      wheelCtx.stroke();
+      wheelCtx.restore();
+    }
+
+    // Label text
+    wheelCtx.save();
+    wheelCtx.translate(cx, cy);
+    wheelCtx.rotate(start + slice / 2);
+    wheelCtx.textAlign  = 'right';
+    wheelCtx.fillStyle  = '#fff';
+    wheelCtx.shadowColor = redBoostMode ? 'rgba(255,80,0,0.9)' : (boostMode ? 'rgba(0,220,255,0.9)' : 'rgba(0,0,0,0.8)');
+
+    wheelCtx.font       = 'bold 20px Outfit';
+    wheelCtx.shadowBlur = (boostMode || redBoostMode) ? 8 : 4;
+    wheelCtx.fillText(prize.label.split(' ')[0], r - 10, 6);
+
+    wheelCtx.font       = 'bold 14px Outfit';
+    wheelCtx.shadowBlur = (boostMode || redBoostMode) ? 6 : 3;
+    wheelCtx.fillText(prize.label.replace(/^\S+\s/, ''), r - 36, 6);
+    wheelCtx.restore();
+
+    start += slice;
+  });
+
+  // Centre hub
+  wheelCtx.beginPath();
+  wheelCtx.arc(cx, cy, 44, 0, Math.PI * 2);
+  if (redBoostMode) {
+    const hubGrad = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, 44);
+    hubGrad.addColorStop(0, '#1A0500');
+    hubGrad.addColorStop(1, '#330800');
+    wheelCtx.fillStyle = hubGrad;
+  } else if (boostMode) {
+    const hubGrad = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, 44);
+    hubGrad.addColorStop(0, '#001A33');
+    hubGrad.addColorStop(1, '#003366');
+    wheelCtx.fillStyle = hubGrad;
+  } else {
+    wheelCtx.fillStyle = '#0A0A0F';
+  }
+  wheelCtx.fill();
+  wheelCtx.strokeStyle = redBoostMode ? 'rgba(255,80,0,0.9)' : (boostMode ? 'rgba(0,220,255,0.9)' : 'rgba(0,207,255,0.4)');
+  wheelCtx.lineWidth   = (boostMode || redBoostMode) ? 4 : 3;
+  if (boostMode || redBoostMode) {
+    wheelCtx.shadowColor = redBoostMode ? '#FF5000' : '#00CFFF';
+    wheelCtx.shadowBlur  = 14;
+  }
+  wheelCtx.stroke();
+  wheelCtx.shadowBlur = 0;
+
+  // Outer ring
+  wheelCtx.beginPath();
+  wheelCtx.arc(cx, cy, r, 0, Math.PI * 2);
+  wheelCtx.strokeStyle = redBoostMode ? 'rgba(255,80,0,0.8)' : (boostMode ? 'rgba(0,220,255,0.7)' : 'rgba(0,207,255,0.25)');
+  wheelCtx.lineWidth   = (boostMode || redBoostMode) ? 8 : 6;
+  if (boostMode || redBoostMode) {
+    wheelCtx.shadowColor = redBoostMode ? '#FF5000' : '#00CFFF';
+    wheelCtx.shadowBlur  = 20;
+  }
+  wheelCtx.stroke();
+  wheelCtx.shadowBlur = 0;
+}
+drawWheel();
+
+function renderPrizeList() {
+  document.getElementById('prizesList').innerHTML = PRIZES.map(p =>
+    `<div class="prize-row">
+       <div class="prize-color" style="background:${p.color}"></div>
+       <div class="prize-name">${p.label}</div>
+     </div>`
+  ).join('');
+}
+renderPrizeList();
+
+// ─── DOM REFS ────────────────────────────────────────
+const codeInput    = document.getElementById('codeInput');
+const codeFeedback = document.getElementById('codeFeedback');
+const unlockBtn    = document.getElementById('unlockBtn');
+const spinBtn      = document.getElementById('spinBtn');
+const statusBadge  = document.getElementById('statusBadge');
+const statusText   = document.getElementById('statusText');
+
+// ─── CODE INPUT LOGIC ────────────────────────────────
+codeInput.addEventListener('input', () => {
+  let v = codeInput.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (v.length > 4) v = v.slice(0, 4) + '-' + v.slice(4, 8);
+  codeInput.value = v;
+  codeInput.classList.remove('valid', 'invalid');
+  codeFeedback.className   = 'code-feedback';
+  codeFeedback.textContent = '';
+
+  if (v.length < 2) return;
+  if (usedCodes.has(v)) {
+    codeInput.classList.add('invalid');
+    codeFeedback.className   = 'code-feedback err';
+    codeFeedback.textContent = '✗ Kode sudah pernah digunakan';
+  } else if (validCodes.has(v) && v.includes('-')) {
+    codeInput.classList.add('valid');
+    codeFeedback.className   = 'code-feedback ok';
+    codeFeedback.textContent = '✓ Kode valid!';
+  } else if (!validCodes.has(v) && v.length >= 9) {
+    codeInput.classList.add('invalid');
+    codeFeedback.className   = 'code-feedback err';
+    codeFeedback.textContent = '✗ Kode tidak ditemukan';
+  }
+});
+
+codeInput.addEventListener('keydown', e => { if (e.key === 'Enter') unlockAccess(); });
+unlockBtn.addEventListener('click', unlockAccess);
+
+async function unlockAccess() {
+  const code = codeInput.value.trim().toUpperCase();
+  if (!code) return;
+
+  if (!isConnected) {
+    codeFeedback.className   = 'code-feedback err';
+    codeFeedback.textContent = '✗ Tidak terhubung ke server';
+    return;
+  }
+  if (usedCodes.has(code) || isSessionUsed(code)) {
+    shake(codeInput);
+    codeFeedback.className   = 'code-feedback err';
+    codeFeedback.textContent = '✗ Kode sudah digunakan!';
+    return;
+  }
+  if (!checkRateLimit('check')) {
+    codeFeedback.className   = 'code-feedback err';
+    codeFeedback.textContent = '✗ Terlalu banyak percobaan, tunggu sebentar!';
+    return;
+  }
+
+  unlockBtn.disabled       = true;
+  codeFeedback.className   = 'code-feedback loading';
+  codeFeedback.textContent = '⏳ Memverifikasi...';
+
+  const result = await apiCall({ action: 'check', code });
+
+  if (!result.success) {
+    unlockBtn.disabled = false;
+    shake(codeInput);
+    codeInput.classList.remove('valid');
+    codeInput.classList.add('invalid');
+    codeFeedback.className = 'code-feedback err';
+    if      (result.status === 'used')    codeFeedback.textContent = '✗ Kode sudah pernah digunakan!';
+    else if (result.status === 'expired') codeFeedback.textContent = '✗ Kode sudah kadaluarsa!';
+    else                                  codeFeedback.textContent = '✗ Kode tidak valid!';
+    return;
+  }
+
+  currentCode = code;
+  isUnlocked  = true;
+  spinBtn.disabled  = false;
+  unlockBtn.disabled = true;
+  codeInput.disabled = true;
+  statusBadge.className = 'status-badge unlocked';
+  const infoExp = result.sisaHari !== null ? ` · Berlaku ${result.sisaHari} hari lagi` : '';
+  statusText.textContent   = 'Akses dibuka! Putar rodanya 🎉' + infoExp;
+  codeFeedback.className   = 'code-feedback ok';
+  codeFeedback.textContent = '✓ Kode diterima!';
+}
+
+// ─── SPIN ────────────────────────────────────────────
+function startSpin() {
+  if (!isUnlocked || isSpinning) return;
+  document.getElementById('confirmOverlay').classList.add('show');
+}
+
+function cancelSpin() {
+  document.getElementById('confirmOverlay').classList.remove('show');
+}
+
+async function confirmSpin() {
+  document.getElementById('confirmOverlay').classList.remove('show');
+  if (!isUnlocked || isSpinning) return;
+
+  // Re-validasi ke server sebelum spin
+  codeFeedback.className   = 'code-feedback loading';
+  codeFeedback.textContent = '⏳ Memvalidasi...';
+
+  const recheck = await apiCall({ action: 'check', code: currentCode });
+  if (!recheck.success) {
+    isUnlocked         = false;
+    spinBtn.disabled   = true;
+    unlockBtn.disabled = false;
+    codeInput.disabled = false;
+    codeInput.value    = '';
+    codeFeedback.className   = 'code-feedback err';
+    codeFeedback.textContent = '✗ Kode tidak valid atau sudah digunakan!';
+    statusBadge.className    = 'status-badge locked';
+    statusText.textContent   = 'Masukkan kode untuk memulai';
+    currentCode = '';
+    return;
+  }
+
+  codeFeedback.textContent = '';
+  codeFeedback.className   = 'code-feedback';
+  isSpinning       = true;
+  spinBtn.disabled = true;
+
+  // ── Electric Boost / Red Electric Boost ────────────
+  // Red Boost diperiksa LEBIH DULU (lebih langka)
+  const boostRoll = Math.random();
+  isRedBoostActive = boostRoll < RED_ELECTRIC_BOOST_CHANCE;
+  isBoostActive    = !isRedBoostActive && boostRoll < (RED_ELECTRIC_BOOST_CHANCE + ELECTRIC_BOOST_CHANCE);
+
+  if (isRedBoostActive) activateRedBoostVisuals();
+  else if (isBoostActive) activateBoostVisuals();
+
+  // Tentukan hadiah — red boost pakai PRIZES_RED_BOOST, blue boost pakai PRIZES_BOOST
+  const activePrizes  = isRedBoostActive ? PRIZES_RED_BOOST : (isBoostActive ? PRIZES_BOOST : PRIZES);
+  const activeTotalW  = isRedBoostActive ? TOTAL_WEIGHT_RED_BOOST : (isBoostActive ? TOTAL_WEIGHT_BOOST : TOTAL_WEIGHT);
+  const rand = Math.random() * activeTotalW;
+  let cumulative = 0, winnerIdx = 0;
+  for (let i = 0; i < activePrizes.length; i++) {
+    if (activePrizes[i].weight === 0) continue;
+    cumulative += activePrizes[i].weight;
+    if (rand < cumulative) { winnerIdx = i; break; }
+  }
+
+  // Hitung sudut target
+  let sliceStart = 0;
+  for (let i = 0; i < winnerIdx; i++) {
+    sliceStart += (DRAW_PRIZES[i].weight / TOTAL_WEIGHT_DRAW) * Math.PI * 2;
+  }
+  const sliceMid    = sliceStart + (DRAW_PRIZES[winnerIdx].weight / TOTAL_WEIGHT_DRAW) * Math.PI;
+  // Boost: putaran lebih banyak (8-12x vs 5-9x) = lebih cepat & dramatis
+  const spinCount   = isBoostActive ? (8 + Math.floor(Math.random() * 5)) : (5 + Math.floor(Math.random() * 4));
+  const spins       = spinCount * Math.PI * 2;
+  const targetAngle = currentAngle - (currentAngle % (Math.PI * 2)) + spins + (Math.PI * 1.5) - sliceMid;
+  // Boost: durasi lebih pendek (lebih cepat) tapi tetap dramatis
+  const anyBoost = isBoostActive || isRedBoostActive;
+  const duration    = anyBoost ? (2500 + Math.random() * 800) : (4000 + Math.random() * 1500);
+  const startTime   = performance.now();
+  const startAngle  = currentAngle;
+
+  stopAmbient();
+  const spinSnd = startSpinSound();
+  let lastT = 0;
+
+  function easeOut(t) { return 1 - Math.pow(1 - t, 4); }
+  const easeFn = easeOut;
+
+  function animate(now) {
+    const t = Math.min((now - startTime) / duration, 1);
+    currentAngle = startAngle + (targetAngle - startAngle) * easeFn(t);
+    drawWheel(currentAngle, isBoostActive, isRedBoostActive);
+
+    if (spinSnd && t > 0) {
+      const speed  = Math.abs(currentAngle - (startAngle + (targetAngle - startAngle) * easeFn(lastT)));
+      // Boost: tick lebih cepat (minimal 20ms vs 40ms)
+      const minTick = anyBoost ? 20 : 40;
+      const tickMs  = Math.max(minTick, Math.min(300, minTick / (speed + 0.01)));
+      spinSnd.setSpeed(tickMs);
+    }
+    lastT = t;
+
+    if (t < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      stopSpinSound();
+      currentAngle = targetAngle % (Math.PI * 2);
+      isSpinning   = false;
+      const wasBoost    = isBoostActive;
+      const wasRedBoost = isRedBoostActive;
+      if (isBoostActive)    deactivateBoostVisuals();
+      if (isRedBoostActive) deactivateRedBoostVisuals();
+      finishSpin(winnerIdx, wasBoost, wasRedBoost);
+      isBoostActive    = false;
+      isRedBoostActive = false;
+      setTimeout(() => { if (!isMuted) startAmbient(); }, 1000);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+async function finishSpin(winnerIdx, wasBoost = false, wasRedBoost = false) {
+  const prize    = PRIZES[winnerIdx];
+  const isReSpin = prize.label === '🔄 Re-Spin';
+
+  // Catat ke localStorage untuk statistik admin
+  const log = JSON.parse(localStorage.getItem('prizeLog') || '{}');
+  log[prize.label] = (log[prize.label] || 0) + 1;
+  localStorage.setItem('prizeLog', JSON.stringify(log));
+
+  if (isReSpin) {
+    // Kode tidak hangus — simpan untuk re-spin
+    reSpinCode = currentCode;
+    isSpinning = false;
+    isUnlocked = false;
+    spinBtn.disabled         = true;
+    codeInput.value          = '';
+    codeFeedback.textContent = '';
+    codeFeedback.className   = 'code-feedback';
+    codeInput.classList.remove('valid', 'invalid');
+    showResult(prize, null, false, false);
+    return;
+  }
+
+  // Kirim ke server (catat di Google Sheets)
+  await apiCall({ action: 'use', code: currentCode, hadiah: prize.label });
+  usedCodes.add(currentCode);
+  validCodes.delete(currentCode);
+  markSessionUsed(currentCode);
+  // Simpan kode terakhir untuk penanda "Kamu" di leaderboard
+  sessionStorage.setItem('lastCode', currentCode);
+  renderUsedCodes();
+  setConnStatus('ok', '✅ Server Online Verified');
+
+  const usedCodeForVoucher = currentCode;
+  isUnlocked         = false;
+  unlockBtn.disabled = false;
+  codeInput.disabled = false;
+  codeInput.value    = '';
+  codeInput.classList.remove('valid', 'invalid');
+  codeFeedback.textContent = '';
+  codeFeedback.className   = 'code-feedback';
+  statusBadge.className    = 'status-badge locked';
+  statusText.textContent   = 'Masukkan kode untuk memulai';
+  currentCode = '';
+
+  showResult(prize, usedCodeForVoucher, wasBoost, wasRedBoost);
+}
+
+// ─── RESULT MODAL ────────────────────────────────────
+function showResult(prize, usedCodeForVoucher, wasBoost = false, wasRedBoost = false) {
+  const isTryAgain = prize.label === '😔 Coba Lagi';
+  const isReSpin   = prize.label === '🔄 Re-Spin';
+
+  document.getElementById('modalEmoji').textContent  = prize.emoji;
+  document.getElementById('modalTitle').textContent  = isTryAgain ? 'SAYANG SEKALI...' : isReSpin ? 'BERUNTUNG!' : 'SELAMAT!';
+  document.getElementById('modalResult').textContent = prize.label;
+  document.getElementById('modalCode').textContent   = isReSpin ? '' : 'Kode yang digunakan telah hangus';
+
+  // Tampilkan/sembunyikan badge boost di modal
+  const boostBadgeEl    = document.getElementById('modalBoostBadge');
+  const redBoostBadgeEl = document.getElementById('modalRedBoostBadge');
+  if (boostBadgeEl)    boostBadgeEl.style.display    = wasBoost    ? 'inline-flex' : 'none';
+  if (redBoostBadgeEl) redBoostBadgeEl.style.display = wasRedBoost ? 'inline-flex' : 'none';
+
+  const waSection     = document.getElementById('waSection');
+  const waBtn         = document.getElementById('waBtn');
+  const respinSection = document.getElementById('respinSection');
+
+  if (isReSpin) {
+    waSection.style.display     = 'none';
+    respinSection.style.display = 'block';
+  } else if (!isTryAgain) {
+    respinSection.style.display = 'none';
+
+    const expDate = new Date();
+    expDate.setDate(expDate.getDate() + 21);
+    const expStr = expDate.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+
+    pendingNamaCode    = usedCodeForVoucher || '';
+    pendingNamaHadiah  = prize.label;
+    pendingWasBoost    = wasBoost;
+    pendingWasRedBoost = wasRedBoost;
+
+    // Reset form nama
+    document.getElementById('namaInput').value            = '';
+    document.getElementById('namaInput').style.borderColor = '';
+    document.getElementById('namaSaved').style.display    = 'none';
+    document.getElementById('namaSubmitBtn').disabled     = false;
+    document.getElementById('namaSubmitBtn').textContent  = 'Simpan';
+    document.getElementById('voucherNama').textContent    = '—';
+
+    // Isi voucher
+    document.getElementById('voucherPrize').textContent = prize.label;
+    document.getElementById('voucherExp').textContent   = expStr;
+    document.getElementById('voucherCode').textContent  = usedCodeForVoucher || '—';
+
+    const pesan = encodeURIComponent(
+      `Halo! Saya baru saja mendapatkan hadiah dari Super Lucky Draw 🎉\n\n` +
+      `🏆 Hadiah: ${prize.label}\n` +
+      `📅 Voucher berlaku hingga: ${expStr}\n\n` +
+      `Saya sudah screenshot voucher sebagai bukti. Mohon bantu proses klaim hadiah saya ya!`
+    );
+    waBtn.href = `https://wa.me/${WA_NUMBER}?text=${pesan}`;
+    waSection.style.display = 'block';
+  } else {
+    waSection.style.display     = 'none';
+    respinSection.style.display = 'none';
+  }
+
+  document.getElementById('modal').classList.add('show');
+
+  // Efek suara & visual
+  if (isReSpin) {
+    launchConfetti();
+    playReSpinSound();
+  } else if (isTryAgain) {
+    playLoseSound();
+  } else if (JACKPOT_LABELS.includes(prize.label)) {
+    launchConfetti();
+    triggerJackpot();
+    playJackpotSound();
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200, 50, 200]);
+  } else {
+    launchConfetti();
+    playWinSound();
+    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+  }
+}
+
+function closeModal() {
+  // Jika ada hadiah pending tapi nama belum diisi, tetap catat ke leaderboard sebagai Anonim
+  const namaVal = document.getElementById('namaInput').value.trim();
+  if (pendingNamaCode && pendingNamaHadiah && !namaVal &&
+      !pendingNamaHadiah.includes('Coba Lagi') && !pendingNamaHadiah.includes('Re-Spin')) {
+    addLbEntry('Anonim', pendingNamaHadiah, pendingNamaCode, pendingWasBoost, pendingWasRedBoost);
+  }
+  document.getElementById('modal').classList.remove('show');
+  document.getElementById('respinSection').style.display = 'none';
+  pendingNamaCode    = '';
+  pendingNamaHadiah  = '';
+  pendingWasBoost    = false;
+  pendingWasRedBoost = false;
+  document.getElementById('namaInput').value             = '';
+  document.getElementById('namaInput').style.borderColor = '';
+  document.getElementById('namaSaved').style.display     = 'none';
+  document.getElementById('namaSubmitBtn').disabled      = false;
+  document.getElementById('namaSubmitBtn').textContent   = 'Simpan';
+  document.getElementById('voucherNama').textContent     = '—';
+}
+document.getElementById('modal').addEventListener('click', function(e) {
+  if (e.target === this) closeModal();
+});
+
+// ─── FORM NAMA ───────────────────────────────────────
+async function submitNama() {
+  const nama = document.getElementById('namaInput').value.trim();
+  if (!nama) {
+    document.getElementById('namaInput').style.borderColor = 'var(--red)';
+    setTimeout(() => { document.getElementById('namaInput').style.borderColor = ''; }, 1000);
+    return;
+  }
+  if (!pendingNamaCode) {
+    const saved = document.getElementById('namaSaved');
+    saved.textContent  = '✗ Sesi tidak valid, tutup dan coba lagi';
+    saved.style.color   = 'var(--red)';
+    saved.style.display = 'block';
+    return;
+  }
+
+  const btn = document.getElementById('namaSubmitBtn');
+  btn.disabled    = true;
+  btn.textContent = '⏳';
+
+  await apiCall({ action: 'savename', code: pendingNamaCode, nama });
+
+  document.getElementById('voucherNama').textContent  = nama;
+  document.getElementById('namaSaved').style.display  = 'block';
+  btn.textContent = '✓';
+
+  // Tambah ke leaderboard lokal
+  addLbEntry(nama, pendingNamaHadiah, pendingNamaCode, pendingWasBoost, pendingWasRedBoost);
+
+  // Update link WA dengan nama
+  const waBtn  = document.getElementById('waBtn');
+  const expStr = document.getElementById('voucherExp').textContent;
+  const pesan  = encodeURIComponent(
+    `Halo! Saya baru saja mendapatkan hadiah dari Super Lucky Draw 🎉\n\n` +
+    `👤 Nama   : ${nama}\n` +
+    `🏆 Hadiah : ${pendingNamaHadiah}\n` +
+    `📅 Voucher berlaku hingga: ${expStr}\n\n` +
+    `Saya sudah screenshot voucher sebagai bukti. Mohon bantu proses klaim hadiah saya ya!`
+  );
+  waBtn.href = `https://wa.me/${WA_NUMBER}?text=${pesan}`;
+}
+
+// ─── RE-SPIN ─────────────────────────────────────────
+function doReSpin() {
+  closeModal();
+  currentCode        = reSpinCode;
+  reSpinCode         = '';
+  isUnlocked         = true;
+  spinBtn.disabled   = false;
+  unlockBtn.disabled = true;
+  codeInput.disabled = true;
+  codeInput.value    = currentCode;
+  statusBadge.className    = 'status-badge unlocked';
+  statusText.textContent   = '🔄 Re-Spin aktif! Putar rodanya!';
+  codeFeedback.className   = 'code-feedback ok';
+  codeFeedback.textContent = '✓ Re-Spin! Gunakan kesempatan ini!';
+}
+
+// ─── CONFETTI ────────────────────────────────────────
+function launchConfetti() {
+  const cv = document.getElementById('confetti');
+  const c  = cv.getContext('2d');
+  cv.width  = window.innerWidth;
+  cv.height = window.innerHeight;
+
+  const colors = ['#00CFFF', '#7B2FFF', '#00BFFF', '#9B59B6', '#3498DB', '#1ABC9C', '#E91E63'];
+  const pieces = Array.from({ length: 120 }, () => ({
+    x: Math.random() * cv.width,
+    y: -20,
+    w: 8 + Math.random() * 10,
+    h: 4 + Math.random() * 6,
+    r: Math.random() * Math.PI * 2,
+    dr: (Math.random() - 0.5) * 0.2,
+    dx: (Math.random() - 0.5) * 4,
+    dy: 3 + Math.random() * 5,
+    color: colors[Math.floor(Math.random() * colors.length)],
+  }));
+
+  let frame = 0;
+  function draw() {
+    c.clearRect(0, 0, cv.width, cv.height);
+    pieces.forEach(p => {
+      p.x += p.dx; p.y += p.dy; p.r += p.dr; p.dy += 0.08;
+      c.save();
+      c.translate(p.x, p.y);
+      c.rotate(p.r);
+      c.fillStyle = p.color;
+      c.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+      c.restore();
+    });
+    frame++;
+    if (frame < 180) requestAnimationFrame(draw);
+    else c.clearRect(0, 0, cv.width, cv.height);
+  }
+  draw();
+}
+
+// ─── USED CODES ──────────────────────────────────────
+function renderUsedCodes() {
+  const list = document.getElementById('usedList');
+  document.getElementById('usedCount').textContent = usedCodes.size;
+  list.innerHTML = usedCodes.size === 0
+    ? '<span style="font-size:12px;color:var(--muted)">Belum ada kode yang digunakan</span>'
+    : [...usedCodes].map(c => `<div class="used-chip">${c}</div>`).join('');
+}
+
+// ─── JACKPOT ─────────────────────────────────────────
+function triggerJackpot() {
+  const el = document.getElementById('jackpotOverlay');
+  el.classList.add('show');
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+  setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+// ─── COPY KODE ───────────────────────────────────────
+function copyKode() {
+  const kode = document.getElementById('voucherCode').textContent;
+  if (!kode || kode === '—') return;
+
+  const btn = document.getElementById('copyCodeBtn');
+  function onCopied() {
+    btn.classList.add('copied');
+    btn.textContent = '✓ Kode Tersalin!';
+    setTimeout(() => {
+      btn.classList.remove('copied');
+      btn.innerHTML = '📋 Salin Kode Spin';
+    }, 2000);
+  }
+
+  navigator.clipboard.writeText(kode).then(onCopied).catch(() => {
+    // Fallback untuk browser lama
+    const el = document.createElement('textarea');
+    el.value = kode;
+    document.body.appendChild(el);
+    el.select();
+    document.execCommand('copy');
+    document.body.removeChild(el);
+    onCopied();
+  });
+}
+
+// ─── EXPORT CSV ──────────────────────────────────────
+function exportCSV() {
+  const rows = [['Kode', 'Status', 'Tersedia', 'Terpakai']];
+  [...validCodes].forEach(c => rows.push([c, 'available', 'Ya', 'Tidak']));
+  [...usedCodes].forEach(c  => rows.push([c, 'used',      'Tidak', 'Ya']));
+
+  const csv     = rows.map(r => r.join(',')).join('\n');
+  const blob    = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url     = URL.createObjectURL(blob);
+  const link    = document.createElement('a');
+  const tanggal = new Date().toLocaleDateString('id-ID').replace(/\//g, '-');
+  link.href     = url;
+  link.download = `spinwheel-data-${tanggal}.csv`;
+  link.click();
+  URL.revokeObjectURL(url);
+}
+
+// ─── SHAKE ANIMATION ─────────────────────────────────
+function shake(el) {
+  el.animate(
+    [
+      { transform: 'translateX(-6px)' },
+      { transform: 'translateX( 6px)' },
+      { transform: 'translateX(-4px)' },
+      { transform: 'translateX( 4px)' },
+      { transform: 'translateX(0)' },
+    ],
+    { duration: 300, easing: 'ease-in-out' }
+  );
+}
+
+// ─── S&K LOGIC ───────────────────────────────────────
+let snkChecked  = false;
+let snkScrolled = false;
+
+const snkBody = document.getElementById('snkBody');
+const snkHint = document.getElementById('snkHint');
+
+snkBody.addEventListener('scroll', () => {
+  const remaining = snkBody.scrollHeight - snkBody.scrollTop - snkBody.clientHeight;
+  if (remaining < 30) {
+    snkScrolled        = true;
+    snkHint.style.opacity = '0';
+    updateStartBtn();
+  }
+});
+
+function toggleCheck() {
+  if (!snkScrolled) {
+    snkHint.style.animation = 'none';
+    snkBody.scrollBy({ top: 60, behavior: 'smooth' });
+    return;
+  }
+  snkChecked = !snkChecked;
+  document.getElementById('snkCheckbox').classList.toggle('checked', snkChecked);
+  updateStartBtn();
+}
+
+function updateStartBtn() {
+  document.getElementById('snkStartBtn').disabled = !(snkChecked && snkScrolled);
+}
+
+function startGame() {
+  const overlay = document.getElementById('snkOverlay');
+  overlay.style.animation = 'fadeOut 0.3s ease forwards';
+  setTimeout(() => {
+    overlay.style.display = 'none';
+    startAmbient(); // Mulai audio setelah user interaksi (syarat browser)
+  }, 300);
+}
+
+// Inject keyframe fadeOut secara dinamis
+const fadeOutStyle = document.createElement('style');
+fadeOutStyle.textContent = '@keyframes fadeOut { to { opacity: 0; transform: scale(0.97); } }';
+document.head.appendChild(fadeOutStyle);
+
+// ─── ANTI INSPECT ────────────────────────────────────
+document.addEventListener('contextmenu', e => e.preventDefault());
+document.addEventListener('keydown', e => {
+  if (
+    e.key === 'F12' ||
+    (e.ctrlKey && e.shiftKey && ['I', 'J', 'C'].includes(e.key.toUpperCase())) ||
+    (e.ctrlKey && ['U', 'S'].includes(e.key.toUpperCase()))
+  ) {
+    e.preventDefault();
+    return false;
+  }
+});
+(function detectDevTools() {
+  const threshold = 160;
+  setInterval(() => {
+    const widthDiff  = window.outerWidth  - window.innerWidth;
+    const heightDiff = window.outerHeight - window.innerHeight;
+    if ((widthDiff > threshold || heightDiff > threshold) && isUnlocked) {
+      isUnlocked         = false;
+      isSpinning         = false;
+      currentCode        = '';
+      spinBtn.disabled   = true;
+      unlockBtn.disabled = false;
+      codeInput.disabled = false;
+      codeInput.value    = '';
+      statusBadge.className  = 'status-badge locked';
+      statusText.textContent = 'Masukkan kode untuk memulai';
+    }
+  }, 1000);
+})();
+
+// ─── EVENT EXPIRED & COUNTDOWN ───────────────────────
+const EVENT_EXPIRED = new Date('2026-06-10T23:59:59');
+
+function checkEventExpired() {
+  if (new Date() > EVENT_EXPIRED) {
+    document.getElementById('checkingOverlay').style.display = 'none';
+    document.getElementById('snkOverlay').style.display      = 'none';
+    document.getElementById('expiredOverlay').classList.add('show');
+    return true;
+  }
+  return false;
+}
+
+function updateCountdown() {
+  const diff = EVENT_EXPIRED - new Date();
+  if (diff <= 0) { checkEventExpired(); return; }
+  const days  = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const mins  = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const secs  = Math.floor((diff % (1000 * 60)) / 1000);
+  document.getElementById('cdDays').textContent  = String(days).padStart(2, '0');
+  document.getElementById('cdHours').textContent = String(hours).padStart(2, '0');
+  document.getElementById('cdMins').textContent  = String(mins).padStart(2, '0');
+  document.getElementById('cdSecs').textContent  = String(secs).padStart(2, '0');
+}
+if (!checkEventExpired()) {
+  updateCountdown();
+  setInterval(updateCountdown, 1000);
+}
+
+// ─── ADMIN PANEL ─────────────────────────────────────
+let adminClickCount = 0, adminClickTimer = null;
+
+document.getElementById('adminTrigger').addEventListener('click', () => {
+  adminClickCount++;
+  clearTimeout(adminClickTimer);
+  adminClickTimer = setTimeout(() => { adminClickCount = 0; }, 1000);
+  if (adminClickCount >= 5) { adminClickCount = 0; openAdminLogin(); }
+});
+
+function openAdminLogin() {
+  document.getElementById('adminLoginOverlay').classList.add('show');
+  setTimeout(() => document.getElementById('adminPwInput').focus(), 100);
+}
+function closeAdminLogin() {
+  document.getElementById('adminLoginOverlay').classList.remove('show');
+  document.getElementById('adminPwInput').value       = '';
+  document.getElementById('adminPwErr').textContent   = '';
+}
+function submitAdminLogin() {
+  const pw = document.getElementById('adminPwInput').value;
+  if (pw === ADMIN_PASSWORD) {
+    closeAdminLogin();
+    openAdminModal();
+  } else {
+    const inp = document.getElementById('adminPwInput');
+    inp.classList.add('wrong');
+    document.getElementById('adminPwErr').textContent = '✗ Password salah';
+    inp.value = '';
+    setTimeout(() => inp.classList.remove('wrong'), 400);
+    inp.focus();
+  }
+}
+document.getElementById('adminPwInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter')  submitAdminLogin();
+  if (e.key === 'Escape') closeAdminLogin();
+});
+document.getElementById('adminLoginOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeAdminLogin();
+});
+
+async function openAdminModal() {
+  document.getElementById('adminModalOverlay').classList.add('show');
+  await refreshAdminPanel();
+  renderAdminLeaderboard();
+  // Sync announce toggle
+  const active = localStorage.getItem('announceActive') === '1';
+  const msg    = localStorage.getItem('announceMsg') || '';
+  const inp    = document.getElementById('announceInput');
+  const toggle = document.getElementById('announceToggle');
+  const prev   = document.getElementById('announcePreview');
+  if (inp)    inp.value = msg;
+  if (toggle) toggle.classList.toggle('on', active);
+  if (prev)  { prev.textContent = msg; prev.classList.toggle('show', !!msg); }
+}
+function closeAdminModal() {
+  document.getElementById('adminModalOverlay').classList.remove('show');
+}
+document.getElementById('adminModalOverlay').addEventListener('click', function(e) {
+  if (e.target === this) closeAdminModal();
+});
+
+async function refreshAdminPanel() {
+  const data = await apiCall({ action: 'list' });
+  if (!data.success) { alert('Gagal memuat data'); return; }
+
+  validCodes = new Set(data.available);
+  usedCodes  = new Set(data.used);
+  renderUsedCodes();
+
+  document.getElementById('availableCount').textContent = validCodes.size;
+  document.getElementById('adminUsedCount').textContent = usedCodes.size;
+
+  document.getElementById('codePool').innerHTML = validCodes.size === 0
+    ? '<span style="font-size:12px;color:var(--muted)">Tidak ada kode tersedia</span>'
+    : [...validCodes].map(c =>
+        `<div class="code-pool-chip" onclick="adminRemoveCode('${c}')" title="Klik untuk hapus">${c}</div>`
+      ).join('');
+
+  document.getElementById('adminUsedPool').innerHTML = usedCodes.size === 0
+    ? '<span style="font-size:12px;color:var(--muted)">Belum ada</span>'
+    : [...usedCodes].map(c => `<div class="used-chip" style="text-decoration:none">${c}</div>`).join('');
+
+  setConnStatus('ok', '✅ Server Online Verified');
+  renderAdminStats();
+}
+
+function renderAdminStats() {
+  const total = validCodes.size + usedCodes.size;
+  const pct   = total > 0 ? Math.round((usedCodes.size / total) * 100) : 0;
+  document.getElementById('statTotal').textContent = total;
+  document.getElementById('statAvail').textContent = validCodes.size;
+  document.getElementById('statUsed').textContent  = usedCodes.size;
+  document.getElementById('statPct').textContent   = pct + '%';
+
+  const log        = JSON.parse(localStorage.getItem('prizeLog') || '{}');
+  const totalSpins = Object.values(log).reduce((a, b) => a + b, 0);
+  const prizeEl    = document.getElementById('prizeStats');
+
+  if (totalSpins === 0) {
+    prizeEl.innerHTML = '<span style="font-size:12px;color:var(--muted)">Belum ada spin</span>';
+    return;
+  }
+  prizeEl.innerHTML = PRIZES.map(p => {
+    const count = log[p.label] || 0;
+    const pct2  = Math.round((count / totalSpins) * 100);
+    return `<div class="prize-stat-row">
+      <div class="prize-stat-label">${p.label}</div>
+      <div class="prize-stat-bar-wrap">
+        <div class="prize-stat-bar" style="width:${pct2}%;background:${p.color}"></div>
+      </div>
+      <div class="prize-stat-count">${count}x</div>
+    </div>`;
+  }).join('');
+}
+
+async function adminAddCode() {
+  let code = document.getElementById('newCodeInput').value.trim().toUpperCase();
+  if (!code) return;
+  code = code.replace(/[^A-Z0-9]/g, '');
+  if (code.length >= 8) code = code.slice(0, 4) + '-' + code.slice(4, 8);
+  else if (code.length >= 4) code = code.slice(0, 4) + '-' + code.slice(4);
+  if (!code.match(/^[A-Z0-9]{4}-[A-Z0-9]{1,4}$/)) { alert('Format kode: XXXX-XXXX'); return; }
+  const res = await apiCall({ action: 'add', code });
+  if (res.success) {
+    document.getElementById('newCodeInput').value = '';
+    await refreshAdminPanel();
+  } else {
+    alert(res.message);
+  }
+}
+
+async function adminGenerateCodes() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  const rand4 = () => Array.from({ length: 4 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+  for (let i = 0; i < 5; i++) {
+    await apiCall({ action: 'add', code: `${rand4()}-${rand4()}` });
+  }
+  await refreshAdminPanel();
+}
+
+async function adminRemoveCode(code) {
+  if (confirm(`Hapus kode "${code}"?`)) {
+    validCodes.delete(code);
+    await refreshAdminPanel();
+  }
+}
+
+async function adminResetUsed() {
+  if (confirm('Reset semua kode terpakai?')) {
+    const res = await apiCall({ action: 'reset' });
+    if (res.success) { await refreshAdminPanel(); alert('Berhasil di-reset!'); }
+    else alert('Gagal: ' + res.message);
+  }
+}
+
+document.getElementById('newCodeInput').addEventListener('input', function() {
+  let v = this.value.toUpperCase().replace(/[^A-Z0-9]/g, '');
+  if (v.length > 4) v = v.slice(0, 4) + '-' + v.slice(4, 8);
+  this.value = v;
+});
+document.getElementById('newCodeInput').addEventListener('keydown', e => {
+  if (e.key === 'Enter') adminAddCode();
+});
+
+// ─── AUDIO ENGINE ────────────────────────────────────
+let audioCtx      = null;
+let isMuted       = false;
+let spinSoundNode = null;
+let spinGain      = null;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function toggleMute() {
+  isMuted = !isMuted;
+  document.getElementById('audioBtn').textContent = isMuted ? '🔇' : '🔊';
+  if (spinGain)        spinGain.gain.value        = isMuted ? 0 : 0.3;
+  if (ambientGainNode) ambientGainNode.gain.value  = isMuted ? 0 : 0.18;
+  if (isMuted) stopAmbient(); else startAmbient();
+}
+
+// ── Suara roda berputar ──
+function startSpinSound() {
+  if (isMuted) return null;
+  const actx = getAudioCtx();
+  stopSpinSound();
+
+  spinGain            = actx.createGain();
+  spinGain.gain.value = 0.3;
+  spinGain.connect(actx.destination);
+
+  let tickInterval = 80;
+  let schedTime    = actx.currentTime;
+
+  function scheduleTick() {
+    if (!spinSoundNode) return;
+    const buf  = actx.createBuffer(1, actx.sampleRate * 0.02, actx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.005));
+    }
+    const src    = actx.createBufferSource();
+    const filter = actx.createBiquadFilter();
+    src.buffer           = buf;
+    filter.type          = 'bandpass';
+    filter.frequency.value = 800 + Math.random() * 400;
+    filter.Q.value       = 2;
+    src.connect(filter);
+    filter.connect(spinGain);
+    src.start(schedTime);
+    schedTime += tickInterval / 1000;
+    spinSoundNode = setTimeout(scheduleTick, tickInterval);
+  }
+
+  spinSoundNode = setTimeout(scheduleTick, 0);
+  return { setSpeed: (ms) => { tickInterval = ms; } };
+}
+
+function stopSpinSound() {
+  if (spinSoundNode) { clearTimeout(spinSoundNode); spinSoundNode = null; }
+}
+
+// ── Suara menang ──
+function playWinSound() {
+  if (isMuted) return;
+  const actx  = getAudioCtx();
+  const notes = [523, 659, 784, 1047];
+  notes.forEach((freq, i) => {
+    const osc  = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type           = 'sine';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, actx.currentTime + i * 0.12);
+    gain.gain.linearRampToValueAtTime(0.3, actx.currentTime + i * 0.12 + 0.05);
+    gain.gain.linearRampToValueAtTime(0,   actx.currentTime + i * 0.12 + 0.25);
+    osc.connect(gain);
+    gain.connect(actx.destination);
+    osc.start(actx.currentTime + i * 0.12);
+    osc.stop(actx.currentTime  + i * 0.12 + 0.3);
+  });
+  setTimeout(() => {
+    for (let i = 0; i < 6; i++) {
+      const osc  = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type            = 'sine';
+      osc.frequency.value = 1047 + i * 200;
+      gain.gain.setValueAtTime(0.15, actx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.5);
+      osc.connect(gain);
+      gain.connect(actx.destination);
+      osc.start(actx.currentTime);
+      osc.stop(actx.currentTime + 0.5);
+    }
+  }, 500);
+}
+
+// ── Suara kalah ──
+function playLoseSound() {
+  if (isMuted) return;
+  const actx  = getAudioCtx();
+  const notes = [400, 350, 300, 250];
+  notes.forEach((freq, i) => {
+    const osc  = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type            = 'sawtooth';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0.15, actx.currentTime + i * 0.15);
+    gain.gain.linearRampToValueAtTime(0, actx.currentTime + i * 0.15 + 0.2);
+    osc.connect(gain);
+    gain.connect(actx.destination);
+    osc.start(actx.currentTime + i * 0.15);
+    osc.stop(actx.currentTime  + i * 0.15 + 0.25);
+  });
+}
+
+// ── Suara re-spin ──
+function playReSpinSound() {
+  if (isMuted) return;
+  const actx = getAudioCtx();
+  for (let i = 0; i < 8; i++) {
+    const osc  = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type            = 'sine';
+    osc.frequency.value = 400 + i * 80;
+    gain.gain.setValueAtTime(0, actx.currentTime + i * 0.06);
+    gain.gain.linearRampToValueAtTime(0.2, actx.currentTime + i * 0.06 + 0.04);
+    gain.gain.linearRampToValueAtTime(0,   actx.currentTime + i * 0.06 + 0.1);
+    osc.connect(gain);
+    gain.connect(actx.destination);
+    osc.start(actx.currentTime + i * 0.06);
+    osc.stop(actx.currentTime  + i * 0.06 + 0.15);
+  }
+}
+
+// ── Suara jackpot ──
+function playJackpotSound() {
+  if (isMuted) return;
+  const actx   = getAudioCtx();
+  const melody = [523, 523, 523, 784, 659, 523, 784, 1047];
+  const timing = [0, .15, .3, .45, .6, .75, .9, 1.05];
+  melody.forEach((freq, i) => {
+    const osc  = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type            = 'triangle';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, actx.currentTime + timing[i]);
+    gain.gain.linearRampToValueAtTime(0.4, actx.currentTime + timing[i] + 0.05);
+    gain.gain.linearRampToValueAtTime(0,   actx.currentTime + timing[i] + 0.18);
+    osc.connect(gain);
+    gain.connect(actx.destination);
+    osc.start(actx.currentTime + timing[i]);
+    osc.stop(actx.currentTime  + timing[i] + 0.2);
+  });
+}
+
+// ─── AMBIENT KASINO ──────────────────────────────────
+let ambientNodes    = [];
+let ambientGainNode = null;
+let ambientRunning  = false;
+let chipInterval    = null;
+let melodyInterval  = null;
+
+function startAmbient() {
+  if (ambientRunning || isMuted) return;
+  ambientRunning = true;
+  const actx = getAudioCtx();
+
+  ambientGainNode = actx.createGain();
+  ambientGainNode.gain.value = 0;
+  ambientGainNode.connect(actx.destination);
+  ambientGainNode.gain.linearRampToValueAtTime(0.18, actx.currentTime + 3);
+
+  // 1. Bass drone
+  function makeDrone(freq, vol) {
+    const osc    = actx.createOscillator();
+    const gain   = actx.createGain();
+    const filter = actx.createBiquadFilter();
+    osc.type             = 'sine';
+    osc.frequency.value  = freq;
+    filter.type          = 'lowpass';
+    filter.frequency.value = 200;
+    gain.gain.value      = vol;
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(ambientGainNode);
+    osc.start();
+    ambientNodes.push(osc);
+  }
+  makeDrone(55,  0.4);
+  makeDrone(82,  0.2);
+  makeDrone(110, 0.1);
+
+  // 2. Chord melodi latar
+  const chords = [
+    [261, 329, 392],
+    [293, 369, 440],
+    [261, 329, 392],
+    [246, 311, 369],
+  ];
+  let chordIdx = 0;
+
+  function playChord() {
+    if (!ambientRunning || isMuted) return;
+    chords[chordIdx % chords.length].forEach(freq => {
+      const osc  = actx.createOscillator();
+      const gain = actx.createGain();
+      osc.type            = 'sine';
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0, actx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.08, actx.currentTime + 0.3);
+      gain.gain.linearRampToValueAtTime(0.05, actx.currentTime + 1.5);
+      gain.gain.linearRampToValueAtTime(0,    actx.currentTime + 2.5);
+      osc.connect(gain);
+      gain.connect(ambientGainNode);
+      osc.start();
+      osc.stop(actx.currentTime + 2.8);
+    });
+    chordIdx++;
+  }
+  playChord();
+  melodyInterval = setInterval(() => { if (ambientRunning && !isMuted) playChord(); }, 3000);
+
+  // 3. Suara chip kasino (random)
+  function playChip() {
+    if (!ambientRunning || isMuted) return;
+    const buf    = actx.createBuffer(1, actx.sampleRate * 0.05, actx.sampleRate);
+    const data   = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.008));
+    }
+    const src    = actx.createBufferSource();
+    const gain   = actx.createGain();
+    const filter = actx.createBiquadFilter();
+    src.buffer             = buf;
+    filter.type            = 'highpass';
+    filter.frequency.value = 1500 + Math.random() * 1000;
+    gain.gain.value        = 0.2 + Math.random() * 0.2;
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(ambientGainNode);
+    src.start();
+  }
+  function scheduleChip() {
+    if (!ambientRunning) return;
+    playChip();
+    chipInterval = setTimeout(scheduleChip, 1000 + Math.random() * 3000);
+  }
+  scheduleChip();
+
+  // 4. Hi-hat tipis (ritme)
+  let beat = 0;
+  const beatInterval = setInterval(() => {
+    if (!ambientRunning || isMuted) return;
+    beat++;
+    const isAccent = beat % 4 === 1 || beat % 4 === 3;
+    const buf    = actx.createBuffer(1, actx.sampleRate * 0.03, actx.sampleRate);
+    const data   = buf.getChannelData(0);
+    for (let i = 0; i < data.length; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.003));
+    }
+    const src    = actx.createBufferSource();
+    const gain   = actx.createGain();
+    const filter = actx.createBiquadFilter();
+    src.buffer             = buf;
+    filter.type            = 'highpass';
+    filter.frequency.value = 8000;
+    gain.gain.value        = isAccent ? 0.08 : 0.03;
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(ambientGainNode);
+    src.start();
+    ambientNodes.push(src);
+  }, 500);
+  ambientNodes.push({ stop: () => clearInterval(beatInterval) });
+}
+
+function stopAmbient() {
+  ambientRunning = false;
+  if (chipInterval)   { clearTimeout(chipInterval);   chipInterval = null; }
+  if (melodyInterval) { clearInterval(melodyInterval); melodyInterval = null; }
+  if (ambientGainNode) {
+    ambientGainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+    setTimeout(() => {
+      ambientNodes.forEach(n => { try { n.stop(); } catch(e) {} });
+      ambientNodes    = [];
+      ambientGainNode = null;
+    }, 1000);
+  }
+}
+
+
+// ─── DARK / LIGHT THEME ─────────────────────────────
+function initTheme() {
+  const saved = localStorage.getItem('theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  document.getElementById('themeBtn').textContent = saved === 'dark' ? '🌙' : '☀️';
+}
+
+function toggleTheme() {
+  const current = document.documentElement.getAttribute('data-theme') || 'dark';
+  const next    = current === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  const btn = document.getElementById('themeBtn');
+  btn.textContent = next === 'dark' ? '🌙' : '☀️';
+  btn.style.transform = 'scale(1.2) rotate(20deg)';
+  setTimeout(() => { btn.style.transform = ''; }, 300);
+  // Redraw wheel agar warna menyesuaikan
+  drawWheel(currentAngle, isBoostActive);
+}
+initTheme();
+
+// ─── ANNOUNCEMENT BANNER ─────────────────────────────
+const ANNOUNCE_KEY        = 'announceMsg';
+const ANNOUNCE_ACTIVE_KEY = 'announceActive';
+const ANNOUNCE_DISMISSED  = 'announceDismissed';
+
+function loadAnnounce() {
+  const msg    = localStorage.getItem(ANNOUNCE_KEY)        || '';
+  const active = localStorage.getItem(ANNOUNCE_ACTIVE_KEY) === '1';
+  const dismissed = sessionStorage.getItem(ANNOUNCE_DISMISSED) === '1';
+
+  const bar  = document.getElementById('announceBanner');
+  const text = document.getElementById('announceText');
+  if (active && msg && !dismissed) {
+    text.textContent = msg;
+    bar.classList.add('show');
+  } else {
+    bar.classList.remove('show');
+  }
+
+  // Sync ke admin panel jika ada
+  const inp    = document.getElementById('announceInput');
+  const toggle = document.getElementById('announceToggle');
+  const prev   = document.getElementById('announcePreview');
+  if (inp)    inp.value       = msg;
+  if (toggle) toggle.classList.toggle('on', active);
+  if (prev) {
+    prev.textContent = msg;
+    prev.classList.toggle('show', !!msg);
+  }
+}
+
+function dismissAnnounce() {
+  sessionStorage.setItem(ANNOUNCE_DISMISSED, '1');
+  document.getElementById('announceBanner').classList.remove('show');
+}
+
+function saveAnnounce() {
+  const msg = (document.getElementById('announceInput').value || '').trim();
+  localStorage.setItem(ANNOUNCE_KEY, msg);
+  const prev = document.getElementById('announcePreview');
+  if (prev) { prev.textContent = msg; prev.classList.toggle('show', !!msg); }
+  // Reset dismissed so banner shows again if re-enabled
+  sessionStorage.removeItem(ANNOUNCE_DISMISSED);
+  loadAnnounce();
+  // Flash confirm
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = '✓ Tersimpan!';
+  setTimeout(() => { btn.textContent = orig; }, 1500);
+}
+
+function toggleAnnounce() {
+  const toggle = document.getElementById('announceToggle');
+  const isOn   = toggle.classList.toggle('on');
+  localStorage.setItem(ANNOUNCE_ACTIVE_KEY, isOn ? '1' : '0');
+  sessionStorage.removeItem(ANNOUNCE_DISMISSED);
+  loadAnnounce();
+}
+
+loadAnnounce();
+
+// ─── LEADERBOARD ─────────────────────────────────────
+const LB_KEY      = 'leaderboard';
+const LB_MAX_ROWS = 20; // simpan maks 20 entri
+
+function getLbData() {
+  try { return JSON.parse(localStorage.getItem(LB_KEY) || '[]'); } catch(e) { return []; }
+}
+function saveLbData(data) {
+  localStorage.setItem(LB_KEY, JSON.stringify(data));
+}
+
+function addLbEntry(nama, prize, code, wasBoost, wasRedBoost = false) {
+  const data = getLbData();
+  const now  = new Date();
+  const time = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+  const dateKey = now.toLocaleDateString('id-ID');
+  data.unshift({ nama: nama || 'Anonim', prize, code, wasBoost, wasRedBoost, time, dateKey });
+  // Simpan maks LB_MAX_ROWS entri
+  saveLbData(data.slice(0, LB_MAX_ROWS));
+  renderLeaderboard();
+}
+
+function renderLeaderboard() {
+  const data    = getLbData();
+  const today   = new Date().toLocaleDateString('id-ID');
+  const todayData = data.filter(e => e.dateKey === today);
+
+  // Update tanggal header
+  document.getElementById('lbDate').textContent =
+    new Date().toLocaleDateString('id-ID', { weekday:'long', day:'numeric', month:'long' });
+
+  const lbList = document.getElementById('lbList');
+  if (!todayData.length) {
+    lbList.innerHTML = '<div class="lb-empty">Belum ada pemenang hari ini. Jadilah yang pertama! 🎯</div>';
+    return;
+  }
+
+  // Filter: tampilkan hanya pemenang (bukan Coba Lagi & bukan Re-Spin)
+  const winners = todayData.filter(e => !e.prize.includes('Coba Lagi') && !e.prize.includes('Re-Spin'));
+  if (!winners.length) {
+    lbList.innerHTML = '<div class="lb-empty">Belum ada pemenang hadiah hari ini 🎯</div>';
+    return;
+  }
+
+  const medals = ['🥇','🥈','🥉'];
+  lbList.innerHTML = winners.slice(0, 10).map((e, i) => {
+    const rank  = medals[i] || `${i+1}`;
+    const boost = e.wasRedBoost ? ' <span style="font-size:10px;color:#FF6030;">🔥</span>' : (e.wasBoost ? ' <span style="font-size:10px;color:#00CFFF;">⚡</span>' : '');
+    const isMe  = e.code === (sessionStorage.getItem('lastCode') || '');
+    return `<div class="lb-row">
+      <span class="lb-rank">${rank}</span>
+      <span class="lb-name">${escHtml(e.nama)}${boost}</span>
+      <span class="lb-prize">${e.prize.split(' ').slice(0,2).join(' ')}</span>
+      <span class="lb-time">${e.time}</span>
+      ${isMe ? '<span class="lb-me">Kamu</span>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function escHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// Admin: refresh leaderboard display
+function refreshLeaderboard() {
+  renderLeaderboard();
+  renderAdminLeaderboard();
+}
+
+function renderAdminLeaderboard() {
+  const data = getLbData();
+  const el   = document.getElementById('lbAdminList');
+  if (!data.length) {
+    el.innerHTML = '<span style="font-size:12px;color:var(--muted)">Belum ada data</span>';
+    return;
+  }
+  el.innerHTML = data.map((e, i) =>
+    `<div class="lb-admin-row">
+      <span class="lb-admin-rank">${i+1}</span>
+      <span class="lb-admin-name">${escHtml(e.nama)}</span>
+      <span class="lb-admin-prize">${e.prize.split(' ').slice(0,2).join(' ')}</span>
+      <span style="font-size:10px;color:var(--muted);font-family:monospace;">${e.dateKey} ${e.time}</span>
+      <button class="lb-admin-del" onclick="deleteLbEntry(${i})" title="Hapus">✕</button>
+    </div>`
+  ).join('');
+}
+
+function deleteLbEntry(idx) {
+  const data = getLbData();
+  data.splice(idx, 1);
+  saveLbData(data);
+  renderAdminLeaderboard();
+  renderLeaderboard();
+}
+
+function clearLeaderboard() {
+  if (!confirm('Reset semua data leaderboard?')) return;
+  saveLbData([]);
+  renderAdminLeaderboard();
+  renderLeaderboard();
+}
+
+// Init leaderboard on load
+renderLeaderboard();
+
+// ─── ELECTRIC BOOST VISUALS ─────────────────────────
+function activateBoostVisuals() {
+  const wrapper = document.getElementById('wheelWrapper');
+  const ring    = document.getElementById('electricRing');
+  const banner  = document.getElementById('boostBanner');
+  const flash   = document.getElementById('boostFlashOverlay');
+  const btn     = document.getElementById('spinBtn');
+  const particles = document.getElementById('electricParticles');
+
+  wrapper.classList.add('boost-active');
+  ring.classList.add('show');
+  banner.classList.add('show');
+  flash.classList.add('show');
+  btn.classList.add('boost-active');
+
+  // Buat partikel listrik
+  particles.innerHTML = '';
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'electric-particle';
+    // Posisikan di sekeliling lingkaran wheel
+    const angle  = (i / 18) * Math.PI * 2;
+    const radius = 180 + Math.random() * 20;
+    const px     = Math.cos(angle) * radius;
+    const py     = Math.sin(angle) * radius;
+    const dx     = (Math.random() - 0.5) * 60;
+    const dy     = (Math.random() - 0.5) * 60;
+    const dur    = (0.6 + Math.random() * 0.8).toFixed(2) + 's';
+    const delay  = (Math.random() * 0.5).toFixed(2) + 's';
+    p.style.cssText = [
+      'left:50%', 'top:50%',
+      `transform:translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`,
+      `--pX:${dx}px`, `--pY:${dy}px`,
+      `--pDur:${dur}`, `--pDelay:-${delay}`,
+      `background:${Math.random() > 0.5 ? '#00EFFF' : '#7B2FFF'}`
+    ].join(';');
+    particles.appendChild(p);
+  }
+
+  // Suara listrik boost
+  playBoostActivateSound();
+}
+
+function deactivateBoostVisuals() {
+  const wrapper = document.getElementById('wheelWrapper');
+  const ring    = document.getElementById('electricRing');
+  const banner  = document.getElementById('boostBanner');
+  const flash   = document.getElementById('boostFlashOverlay');
+  const btn     = document.getElementById('spinBtn');
+  const particles = document.getElementById('electricParticles');
+
+  wrapper.classList.remove('boost-active');
+  ring.classList.remove('show');
+  banner.classList.remove('show');
+  flash.classList.remove('show');
+  btn.classList.remove('boost-active');
+  particles.innerHTML = '';
+
+  // Redraw wheel normal
+  drawWheel(currentAngle, false, false);
+}
+
+// ─── RED ELECTRIC BOOST VISUALS ─────────────────────────
+function activateRedBoostVisuals() {
+  const wrapper   = document.getElementById('wheelWrapper');
+  const ring      = document.getElementById('redElectricRing');
+  const banner    = document.getElementById('redBoostBanner');
+  const flash     = document.getElementById('redBoostFlashOverlay');
+  const btn       = document.getElementById('spinBtn');
+  const particles = document.getElementById('electricParticles');
+
+  wrapper.classList.add('red-boost-active');
+  ring.classList.add('show');
+  banner.classList.add('show');
+  flash.classList.add('show');
+  btn.classList.add('red-boost-active');
+
+  // Buat partikel merah
+  particles.innerHTML = '';
+  for (let i = 0; i < 22; i++) {
+    const p = document.createElement('div');
+    p.className = 'red-electric-particle';
+    const angle  = (i / 22) * Math.PI * 2;
+    const radius = 180 + Math.random() * 20;
+    const px     = Math.cos(angle) * radius;
+    const py     = Math.sin(angle) * radius;
+    const dx     = (Math.random() - 0.5) * 70;
+    const dy     = (Math.random() - 0.5) * 70;
+    const dur    = (0.5 + Math.random() * 0.9).toFixed(2) + 's';
+    const delay  = (Math.random() * 0.5).toFixed(2) + 's';
+    p.style.cssText = [
+      'left:50%', 'top:50%',
+      `transform:translate(calc(-50% + ${px}px), calc(-50% + ${py}px))`,
+      `--pX:${dx}px`, `--pY:${dy}px`,
+      `--pDur:${dur}`, `--pDelay:-${delay}`,
+      `background:${Math.random() > 0.5 ? '#FF6030' : '#FF9000'}`
+    ].join(';');
+    particles.appendChild(p);
+  }
+
+  playRedBoostActivateSound();
+}
+
+function deactivateRedBoostVisuals() {
+  const wrapper   = document.getElementById('wheelWrapper');
+  const ring      = document.getElementById('redElectricRing');
+  const banner    = document.getElementById('redBoostBanner');
+  const flash     = document.getElementById('redBoostFlashOverlay');
+  const btn       = document.getElementById('spinBtn');
+  const particles = document.getElementById('electricParticles');
+
+  wrapper.classList.remove('red-boost-active');
+  ring.classList.remove('show');
+  banner.classList.remove('show');
+  flash.classList.remove('show');
+  btn.classList.remove('red-boost-active');
+  particles.innerHTML = '';
+
+  drawWheel(currentAngle, false, false);
+}
+
+// ── Suara Red Electric Boost activate ──
+function playRedBoostActivateSound() {
+  if (isMuted) return;
+  const actx = getAudioCtx();
+
+  // Zap merah lebih dalam — noise burst + lower freqs
+  const zapBuf  = actx.createBuffer(1, actx.sampleRate * 0.2, actx.sampleRate);
+  const zapData = zapBuf.getChannelData(0);
+  for (let i = 0; i < zapData.length; i++) {
+    zapData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.05));
+  }
+  const zapSrc    = actx.createBufferSource();
+  const zapGain   = actx.createGain();
+  const zapFilter = actx.createBiquadFilter();
+  zapSrc.buffer             = zapBuf;
+  zapFilter.type            = 'bandpass';
+  zapFilter.frequency.value = 800;
+  zapFilter.Q.value         = 1.5;
+  zapGain.gain.value        = 0.5;
+  zapSrc.connect(zapFilter);
+  zapFilter.connect(zapGain);
+  zapGain.connect(actx.destination);
+  zapSrc.start();
+
+  // Descending fire-electric tone
+  [300, 500, 700, 1000, 1500, 2200].forEach((freq, i) => {
+    const osc  = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type            = 'sawtooth';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, actx.currentTime + i * 0.045);
+    gain.gain.linearRampToValueAtTime(0.22, actx.currentTime + i * 0.045 + 0.03);
+    gain.gain.linearRampToValueAtTime(0,    actx.currentTime + i * 0.045 + 0.14);
+    osc.connect(gain);
+    gain.connect(actx.destination);
+    osc.start(actx.currentTime + i * 0.045);
+    osc.stop(actx.currentTime  + i * 0.045 + 0.18);
+  });
+}
+
+// ── Suara Electric Boost activate ──
+function playBoostActivateSound() {
+  if (isMuted) return;
+  const actx = getAudioCtx();
+
+  // Zap elektrik: noise burst + rising tone
+  const zapBuf  = actx.createBuffer(1, actx.sampleRate * 0.15, actx.sampleRate);
+  const zapData = zapBuf.getChannelData(0);
+  for (let i = 0; i < zapData.length; i++) {
+    zapData[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.04));
+  }
+  const zapSrc    = actx.createBufferSource();
+  const zapGain   = actx.createGain();
+  const zapFilter = actx.createBiquadFilter();
+  zapSrc.buffer           = zapBuf;
+  zapFilter.type          = 'bandpass';
+  zapFilter.frequency.value = 2000;
+  zapFilter.Q.value        = 2;
+  zapGain.gain.value       = 0.4;
+  zapSrc.connect(zapFilter);
+  zapFilter.connect(zapGain);
+  zapGain.connect(actx.destination);
+  zapSrc.start();
+
+  // Rising electric tone
+  [400, 600, 900, 1400, 2000].forEach((freq, i) => {
+    const osc  = actx.createOscillator();
+    const gain = actx.createGain();
+    osc.type            = 'sawtooth';
+    osc.frequency.value = freq;
+    gain.gain.setValueAtTime(0, actx.currentTime + i * 0.05);
+    gain.gain.linearRampToValueAtTime(0.18, actx.currentTime + i * 0.05 + 0.03);
+    gain.gain.linearRampToValueAtTime(0,    actx.currentTime + i * 0.05 + 0.12);
+    osc.connect(gain);
+    gain.connect(actx.destination);
+    osc.start(actx.currentTime + i * 0.05);
+    osc.stop(actx.currentTime  + i * 0.05 + 0.15);
+  });
+}
+
+// ─── START ───────────────────────────────────────────
+initCodes();
+renderUsedCodes();
+</script>
+</body>
+</html>
