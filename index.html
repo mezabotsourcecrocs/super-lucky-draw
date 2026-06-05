@@ -2178,9 +2178,9 @@ const PRIZES = [
   { label: "🏆 Crocs Classic Clog 1pcs", color: "#00CFFF", weight: 0,  emoji: "🏆" },
   { label: "💰 DANA KAGET 30RB",                color: "#7B2FFF", weight: 7,  emoji: "💰" },
   { label: "🎁 DANA KAGET 20RB",             color: "#00BFFF", weight: 8, emoji: "🎁" },
-  { label: "🎟️ Diskon 30RB",             color: "#9B59B6", weight: 34, emoji: "🎟️" },
-  { label: "😔 Coba Lagi",               color: "#455A64", weight: 51, emoji: "😔" },
-  { label: "🔄 Re-Spin",                 color: "#1ABC9C", weight: 28, emoji: "🔄" },
+  { label: "🎟️ Diskon 30RB",             color: "#9B59B6", weight: 33, emoji: "🎟️" },
+  { label: "😔 Coba Lagi",               color: "#455A64", weight: 50, emoji: "😔" },
+  { label: "🔄 Re-Spin",                 color: "#1ABC9C", weight: 25, emoji: "🔄" },
 ];
 
 const TOTAL_WEIGHT      = PRIZES.filter(p => p.weight > 0).reduce((s, p) => s + p.weight, 0);
@@ -2190,10 +2190,10 @@ const JACKPOT_LABELS    = ["🏆 Crocs Classic Clog 1pcs"];
 
 // ─── ⚙️  KONFIGURASI BOOST — UBAH DI SINI ─────────────
 // Chance mendapatkan Electric Boost (biru) saat spin: 0.0 – 1.0 (60% default)
-const ELECTRIC_BOOST_CHANCE     = 0.30;
+const ELECTRIC_BOOST_CHANCE     = 0.60;
 // Chance mendapatkan Red Electric Boost (merah) saat spin: 0.0 – 1.0 (10% default)
 // Catatan: Red Boost diperiksa LEBIH DULU dari Blue Boost
-const RED_ELECTRIC_BOOST_CHANCE = 0.60;
+const RED_ELECTRIC_BOOST_CHANCE = 0.10;
 // ──────────────────────────────────────────────────────
 
 // ─── ELECTRIC BOOST: +10% weight untuk semua hadiah (kecuali "Coba Lagi") ───
