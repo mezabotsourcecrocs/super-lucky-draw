@@ -1338,6 +1338,192 @@
     .respin-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,188,156,0.5); }
     .respin-sub { font-size: 11px; color: var(--muted); margin-top: 8px; }
 
+    /* ── CINEMATIC REVEAL ── */
+    .cinematic-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+    }
+    .cinematic-overlay.show { display: flex; }
+
+    /* Letterbox bars atas & bawah */
+    .cinematic-bar-top,
+    .cinematic-bar-bot {
+      position: fixed;
+      left: 0; right: 0;
+      height: 0;
+      background: #000;
+      z-index: 501;
+      transition: height 0.5s cubic-bezier(.4,0,.2,1);
+    }
+    .cinematic-bar-top { top: 0; }
+    .cinematic-bar-bot { bottom: 0; }
+    .cinematic-overlay.show .cinematic-bar-top,
+    .cinematic-overlay.show .cinematic-bar-bot { height: 14vh; }
+
+    /* Vignette gelap dari pinggir */
+    .cinematic-vignette {
+      position: fixed;
+      inset: 0;
+      z-index: 502;
+      background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 40%, rgba(0,0,0,0.85) 100%);
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      pointer-events: none;
+    }
+    .cinematic-overlay.show .cinematic-vignette { opacity: 1; }
+
+    /* Teks hadiah sinematik di tengah layar */
+    .cinematic-prize-wrap {
+      position: fixed;
+      inset: 0;
+      z-index: 503;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .cinematic-prize-wrap.reveal {
+      animation: cinematicReveal 0.8s cubic-bezier(.22,1,.36,1) forwards;
+    }
+    @keyframes cinematicReveal {
+      0%   { opacity: 0; transform: scale(0.6) translateY(30px); filter: blur(12px); }
+      60%  { opacity: 1; filter: blur(0); }
+      100% { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
+    }
+    .cinematic-prize-wrap.exit {
+      animation: cinematicExit 0.5s ease-in forwards;
+    }
+    @keyframes cinematicExit {
+      to { opacity: 0; transform: scale(1.08); filter: blur(6px); }
+    }
+
+    .cinematic-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 16px;
+    }
+    .cinematic-emoji-big {
+      font-size: 80px;
+      line-height: 1;
+      margin-bottom: 20px;
+      filter: drop-shadow(0 0 40px rgba(0,207,255,0.6));
+    }
+    .cinematic-prize-name {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(1.8rem, 6vw, 3.2rem);
+      text-align: center;
+      padding: 0 24px;
+      background: linear-gradient(135deg, #fff 0%, #00CFFF 50%, #7B2FFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      filter: drop-shadow(0 0 30px rgba(0,207,255,0.5));
+      line-height: 1.2;
+    }
+    .cinematic-prize-name.try-again {
+      background: linear-gradient(135deg, #aaa, #555);
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: none;
+    }
+    .cinematic-prize-name.jackpot {
+      background: linear-gradient(135deg, #FFD700, #FF8C00, #FFD700);
+      -webkit-background-clip: text;
+      background-clip: text;
+      filter: drop-shadow(0 0 40px rgba(255,180,0,0.8));
+    }
+    .cinematic-sub {
+      margin-top: 16px;
+      font-size: 13px;
+      color: rgba(255,255,255,0.45);
+      letter-spacing: 0.1em;
+      font-weight: 600;
+    }
+
+    /* Scan line efek sinematik */
+    .cinematic-scanline {
+      position: fixed;
+      inset: 0;
+      z-index: 502;
+      background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0,0,0,0.04) 2px,
+        rgba(0,0,0,0.04) 4px
+      );
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.4s;
+    }
+    .cinematic-overlay.show .cinematic-scanline { opacity: 1; }
+
+    /* Flash putih saat reveal */
+    .cinematic-flash {
+      position: fixed;
+      inset: 0;
+      z-index: 504;
+      background: white;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .cinematic-flash.pop {
+      animation: flashPop 0.35s ease-out forwards;
+    }
+    @keyframes flashPop {
+      0%  { opacity: 0.7; }
+      100%{ opacity: 0; }
+    }
+
+    /* Garis cahaya horizontal (speed lines) */
+    .cinematic-speedlines {
+      position: fixed;
+      inset: 0;
+      z-index: 502;
+      pointer-events: none;
+      opacity: 0;
+    }
+    .cinematic-overlay.show .cinematic-speedlines {
+      animation: speedlineFade 1s 0.3s ease-out forwards;
+    }
+    @keyframes speedlineFade {
+      0%   { opacity: 0.6; }
+      100% { opacity: 0; }
+    }
+
+    /* ── WHEEL HINT (sekilas bocor sebelum spin) ── */
+    .hint-ghost {
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 7;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .hint-ghost.show { opacity: 1; }
+    .hint-arrow {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform-origin: 0 0;
+      pointer-events: none;
+      z-index: 8;
+      opacity: 0;
+      transition: opacity 0.25s;
+    }
+    .hint-arrow.show { opacity: 1; }
+
     /* ── JACKPOT EFFECT ── */
     .jackpot-overlay { display: none; position: fixed; inset: 0; z-index: 98; pointer-events: none; }
     .jackpot-overlay.show { display: block; }
@@ -1402,8 +1588,8 @@
     /* ── AUDIO CONTROL ── */
     .audio-btn {
       position: fixed;
-      bottom: 16px; left: 16px;
-      z-index: 60;
+      bottom: 16px; right: 16px;
+      z-index: 800;
       width: 40px; height: 40px;
       border-radius: 50%;
       border: 1px solid rgba(0,207,255,0.3);
@@ -1844,9 +2030,267 @@
       from { opacity: 0.4; }
       to   { opacity: 1; }
     }
+    /* ══ CARA BERMAIN ══ */
+    .htplay-card {
+      background: var(--bg2);
+      border: 1.5px solid var(--border);
+      border-radius: 18px;
+      padding: 22px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+    }
+    .htplay-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(0,207,255,0.35);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.3), 0 0 20px rgba(0,207,255,0.08);
+    }
+    .htplay-num {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 48px;
+      line-height: 1;
+      color: rgba(255,255,255,0.04);
+      position: absolute;
+      top: 12px; right: 16px;
+      letter-spacing: -2px;
+      pointer-events: none;
+    }
+    .htplay-icon-wrap {
+      width: 60px; height: 60px;
+      border-radius: 16px;
+      border: 1.5px solid;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .htplay-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      letter-spacing: 0.04em;
+      line-height: 1.3;
+    }
+    .htplay-desc {
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.7;
+      flex: 1;
+    }
+    .htplay-tag {
+      display: inline-block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      padding: 4px 10px;
+      border-radius: 20px;
+      border: 1px solid;
+      align-self: flex-start;
+    }
+    .htplay-tip {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-size: 12px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .htplay-tip strong { color: var(--text); }
+
+    /* ══════════════════════════════════════════
+       ONBOARDING TUTORIAL
+    ══════════════════════════════════════════ */
+    .tutorial-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 9000;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+    }
+    .tutorial-overlay.show { display: flex; align-items: center; justify-content: center; }
+
+    /* Spotlight — lingkaran highlight elemen */
+    .tutorial-spotlight {
+      position: fixed;
+      z-index: 8999;
+      border-radius: 50%;
+      pointer-events: none;
+      box-shadow: 0 0 0 9999px rgba(0,0,0,0.82);
+      transition: all 0.5s cubic-bezier(.4,0,.2,1);
+      display: none;
+    }
+    .tutorial-spotlight.show { display: block; }
+
+    /* Tooltip card */
+    .tutorial-card {
+      position: fixed;
+      z-index: 9001;
+      background: var(--bg2);
+      border: 1.5px solid var(--accent);
+      border-radius: 20px;
+      padding: 22px 24px;
+      max-width: 310px;
+      width: calc(100vw - 48px);
+      box-shadow:
+        0 0 0 1px rgba(0,207,255,0.1),
+        0 20px 60px rgba(0,0,0,0.6),
+        0 0 40px rgba(0,207,255,0.15);
+      transition: all 0.4s cubic-bezier(.4,0,.2,1);
+      display: none;
+    }
+    .tutorial-card.show { display: block; }
+
+    /* Arrow penunjuk */
+    .tutorial-arrow {
+      position: fixed;
+      z-index: 9001;
+      pointer-events: none;
+      display: none;
+      font-size: 28px;
+      filter: drop-shadow(0 0 8px #00CFFF);
+      animation: arrowBounce 0.7s ease-in-out infinite alternate;
+      transition: all 0.4s cubic-bezier(.4,0,.2,1);
+    }
+    .tutorial-arrow.show { display: block; }
+    @keyframes arrowBounce {
+      from { transform: translateY(0) rotate(var(--arrow-rot, 0deg)); }
+      to   { transform: translateY(-8px) rotate(var(--arrow-rot, 0deg)); }
+    }
+
+    .tutorial-step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(0,207,255,0.12);
+      border: 1px solid rgba(0,207,255,0.3);
+      border-radius: 20px;
+      padding: 3px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent);
+      letter-spacing: 0.08em;
+      margin-bottom: 10px;
+    }
+    .tutorial-step-emoji { font-size: 16px; }
+    .tutorial-title {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 18px;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+    .tutorial-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.65;
+      margin-bottom: 18px;
+    }
+    .tutorial-desc strong { color: var(--text); }
+    .tutorial-desc .tag-blue  { color: #00CFFF; font-weight: 700; }
+    .tutorial-desc .tag-red   { color: #FF6030; font-weight: 700; }
+    .tutorial-desc .tag-gold  { color: var(--gold); font-weight: 700; }
+
+    .tutorial-btns {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+    .tutorial-btn-next {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent);
+      color: #000;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 14px;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(0,207,255,0.3);
+    }
+    .tutorial-btn-next:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,207,255,0.5); }
+    .tutorial-btn-skip {
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tutorial-btn-skip:hover { border-color: var(--muted); color: var(--text); }
+
+    /* Progress dots */
+    .tutorial-dots {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .tutorial-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all 0.3s;
+    }
+    .tutorial-dot.active {
+      background: var(--accent);
+      width: 18px;
+      border-radius: 3px;
+      box-shadow: 0 0 6px rgba(0,207,255,0.5);
+    }
+    .tutorial-dot.done { background: rgba(0,207,255,0.35); }
+
+    /* Tombol ? untuk buka tutorial ulang */
+    .tutorial-fab {
+      position: fixed;
+      bottom: 16px;
+      left: 16px;
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      background: rgba(10,10,15,0.8);
+      border: 1.5px solid var(--border);
+      color: var(--muted);
+      font-size: 16px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+      z-index: 800;
+      transition: all 0.2s;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+    }
+    .tutorial-fab:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      box-shadow: 0 0 12px rgba(0,207,255,0.3);
+    }
   </style>
-</head>
-<body>
+
+  <!-- ══ ONBOARDING TUTORIAL ══ -->
+  <div class="tutorial-spotlight" id="tutSpotlight"></div>
+  <div class="tutorial-overlay"   id="tutOverlay"></div>
+  <div class="tutorial-arrow"     id="tutArrow">⬇️</div>
+  <div class="tutorial-card"      id="tutCard">
+    <div class="tutorial-dots" id="tutDots"></div>
+    <div class="tutorial-step-badge">
+      <span class="tutorial-step-emoji" id="tutEmoji">🎯</span>
+      <span id="tutBadgeText">LANGKAH 1</span>
+    </div>
+    <div class="tutorial-title" id="tutTitle">Selamat Datang!</div>
+    <div class="tutorial-desc"  id="tutDesc"></div>
+    <div class="tutorial-btns">
+      <button class="tutorial-btn-skip" onclick="tutSkip()">Lewati</button>
+      <button class="tutorial-btn-next" id="tutNextBtn" onclick="tutNext()">Lanjut →</button>
+    </div>
+  </div>
+  <button class="tutorial-fab" onclick="startTutorial(true)" title="Panduan cara main">❓</button>
 
   <!-- LIGHTNING BACKGROUND -->
   <div class="lightning-bg">
@@ -1867,7 +2311,7 @@
       <div class="expired-emoji">⏰</div>
       <div class="expired-title">EVENT BERAKHIR</div>
       <div class="expired-sub">Maaf, event Super Lucky Draw sudah berakhir.<br>Pantau terus media sosial kami untuk event selanjutnya!</div>
-      <div class="expired-date">Event berlaku hingga: 10 April 2026</div>
+      <div class="expired-date">Try Connect Again. [404]</div>
     </div>
   </div>
 
@@ -1951,8 +2395,8 @@
           <h3>4. ⚡ Electric Boost &amp; 🔥 Red Electric Boost</h3>
           <p>Sistem ini memberikan kesempatan bonus secara acak kepada peserta saat melakukan spin.</p>
           <ol>
-            <li><strong>⚡ Electric Boost</strong> — muncul secara acak dengan peluang 60% setiap spin. Saat aktif, peluang mendapatkan hadiah meningkat sekitar +10% dan roda berputar lebih cepat dengan efek biru elektrik.</li>
-            <li><strong>🔥 Red Electric Boost</strong> — muncul secara acak dengan peluang 10% setiap spin dan lebih langka dari Electric Boost biasa. Saat aktif, peluang mendapatkan hadiah meningkat sekitar +20% dengan efek merah-api yang lebih intens.</li>
+            <li><strong>⚡ Electric Boost</strong> — muncul secara acak dengan peluang 44% setiap spin. Saat aktif, peluang mendapatkan hadiah meningkat sekitar +10% dan roda berputar lebih cepat dengan efek biru elektrik.</li>
+            <li><strong>🔥 Red Electric Boost</strong> — muncul secara acak dengan peluang 19% setiap spin dan lebih langka dari Electric Boost biasa. Saat aktif, peluang mendapatkan hadiah meningkat sekitar +20% dengan efek merah-api yang lebih intens.</li>
             <li>Kedua boost muncul secara otomatis dan tidak dapat dipilih atau diatur oleh peserta.</li>
             <li>Red Electric Boost diprioritaskan — jika keduanya terpilih dalam satu spin, hanya Red Electric Boost yang aktif.</li>
             <li>Boost tidak menjamin hadiah tertentu; hasil tetap bersifat acak meskipun peluang meningkat.</li>
@@ -2043,6 +2487,8 @@
           <div class="red-electric-ring" id="redElectricRing"></div>
           <!-- Partikel listrik (inject via JS) -->
           <div id="electricParticles"></div>
+          <!-- Hint ghost sebelum spin -->
+          <canvas class="hint-ghost" id="hintGhost" width="500" height="500"></canvas>
           <div class="wheel-pointer">
             <svg viewBox="0 0 36 42" fill="none">
               <path d="M18 42 L0 10 Q18 0 36 10 Z" fill="#00BFFF"/>
@@ -2100,7 +2546,7 @@
 
   <!-- LEADERBOARD PANEL -->
   <div style="position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 20px 40px;">
-    <div class="lb-panel" id="lbPanel">
+    <div class="lb-panel" id="lbSection">
       <div class="lb-header">
         <div class="lb-header-left">
           <div class="lb-icon">🏅</div>
@@ -2118,13 +2564,146 @@
     </div>
   </div>
 
+  <!-- ══ CARA BERMAIN ══ -->
+  <div style="position:relative;z-index:1;max-width:1100px;margin:0 auto;padding:0 20px 60px;" id="howToPlaySection">
+
+    <!-- Header -->
+    <div style="text-align:center;margin-bottom:32px;">
+      <div style="display:inline-flex;align-items:center;gap:10px;
+           background:rgba(0,207,255,0.08);border:1.5px solid rgba(0,207,255,0.25);
+           border-radius:30px;padding:8px 20px;margin-bottom:16px;">
+        <span style="font-size:18px;">🎮</span>
+        <span style="font-family:'Black Han Sans',sans-serif;font-size:12px;
+              color:var(--accent);letter-spacing:0.12em;">PANDUAN BERMAIN</span>
+      </div>
+      <div style="font-family:'Black Han Sans',sans-serif;font-size:clamp(22px,5vw,32px);
+           color:var(--text);margin-bottom:8px;line-height:1.2;">
+        Cara Main Super Lucky Draw
+      </div>
+      <div style="font-size:14px;color:var(--muted);max-width:480px;margin:0 auto;line-height:1.6;">
+        Ikuti 4 langkah mudah ini dan raih hadiahmu!
+      </div>
+    </div>
+
+    <!-- Step Cards -->
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:40px;">
+
+      <!-- Step 1 -->
+      <div class="htplay-card">
+        <div class="htplay-num">01</div>
+        <div class="htplay-icon-wrap" style="background:linear-gradient(135deg,rgba(123,47,255,0.2),rgba(0,207,255,0.1));border-color:rgba(123,47,255,0.4);">
+          <span style="font-size:32px;">🛍️</span>
+        </div>
+        <div class="htplay-title">Belanja di Source Crocs</div>
+        <div class="htplay-desc">Lakukan transaksi di toko kami dan dapatkan <strong>kode unik</strong> sebagai hadiah pembelian.</div>
+        <div class="htplay-tag" style="color:#7B2FFF;background:rgba(123,47,255,0.1);border-color:rgba(123,47,255,0.3);">Syarat Utama</div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="htplay-card">
+        <div class="htplay-num">02</div>
+        <div class="htplay-icon-wrap" style="background:linear-gradient(135deg,rgba(0,207,255,0.2),rgba(0,100,255,0.1));border-color:rgba(0,207,255,0.4);">
+          <span style="font-size:32px;">🔑</span>
+        </div>
+        <div class="htplay-title">Masukkan Kode Unik</div>
+        <div class="htplay-desc">Ketik kode format <code style="background:rgba(0,207,255,0.1);color:var(--accent);padding:2px 6px;border-radius:4px;">XXXX-XXXX</code> di kolom input dan tekan <strong>CEK KODE</strong>.</div>
+        <div class="htplay-tag" style="color:#00CFFF;background:rgba(0,207,255,0.1);border-color:rgba(0,207,255,0.3);">1 Kode = 1 Spin</div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="htplay-card">
+        <div class="htplay-num">03</div>
+        <div class="htplay-icon-wrap" style="background:linear-gradient(135deg,rgba(255,200,0,0.2),rgba(255,150,0,0.1));border-color:rgba(255,200,0,0.4);">
+          <span style="font-size:32px;">🎰</span>
+        </div>
+        <div class="htplay-title">Putar Roda!</div>
+        <div class="htplay-desc">Klik <strong>SPIN</strong> dan saksikan roda berputar. Kamu bisa dapat <span style="color:#00CFFF;font-weight:700;">⚡ Electric Boost</span> atau <span style="color:#FF6030;font-weight:700;">🔥 Red Boost</span> secara acak!</div>
+        <div class="htplay-tag" style="color:var(--gold);background:rgba(255,200,0,0.1);border-color:rgba(255,200,0,0.3);">Tidak Bisa Diulang</div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="htplay-card">
+        <div class="htplay-num">04</div>
+        <div class="htplay-icon-wrap" style="background:linear-gradient(135deg,rgba(0,200,83,0.2),rgba(0,150,60,0.1));border-color:rgba(0,200,83,0.4);">
+          <span style="font-size:32px;">🎁</span>
+        </div>
+        <div class="htplay-title">Klaim Hadiahmu!</div>
+        <div class="htplay-desc"><strong>Screenshot</strong> hasil hadiah, lalu klik <strong>Klaim via WhatsApp</strong>. Hadiah wajib diklaim dalam <strong>1×24 jam</strong>.</div>
+        <div class="htplay-tag" style="color:#00C853;background:rgba(0,200,83,0.1);border-color:rgba(0,200,83,0.3);">Segera Klaim!</div>
+      </div>
+
+    </div>
+
+    <!-- Boost Info Banner -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:32px;">
+
+      <!-- Electric Boost -->
+      <div style="background:linear-gradient(135deg,rgba(0,207,255,0.08),rgba(0,100,255,0.05));
+           border:1.5px solid rgba(0,207,255,0.3);border-radius:16px;padding:18px 20px;
+           position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:0.07;pointer-events:none;">⚡</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="font-size:24px;">⚡</span>
+          <div>
+            <div style="font-family:'Black Han Sans',sans-serif;font-size:14px;color:#00CFFF;letter-spacing:0.06em;">ELECTRIC BOOST</div>
+            <div style="font-size:11px;color:var(--muted);">Peluang muncul: <strong style="color:#00CFFF;">44%</strong></div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.65;">
+          Roda berubah <strong style="color:#00CFFF;">biru elektrik</strong> dan berputar lebih cepat. Peluang dapat hadiah naik <strong style="color:#00CFFF;">+10%</strong> — "Coba Lagi" jauh lebih jarang muncul!
+        </div>
+        <div style="margin-top:10px;height:4px;background:rgba(0,207,255,0.15);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:60%;background:linear-gradient(90deg,#00CFFF,#7B2FFF);border-radius:4px;"></div>
+        </div>
+      </div>
+
+      <!-- Red Electric Boost -->
+      <div style="background:linear-gradient(135deg,rgba(255,60,0,0.08),rgba(255,100,0,0.05));
+           border:1.5px solid rgba(255,60,0,0.35);border-radius:16px;padding:18px 20px;
+           position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-10px;right:-10px;font-size:60px;opacity:0.07;pointer-events:none;">🔥</div>
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+          <span style="font-size:24px;">🔥</span>
+          <div>
+            <div style="font-family:'Black Han Sans',sans-serif;font-size:14px;color:#FF6030;letter-spacing:0.06em;">RED ELECTRIC BOOST</div>
+            <div style="font-size:11px;color:var(--muted);">Peluang muncul: <strong style="color:#FF6030;">19%</strong> — Langka!</div>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.65;">
+          Roda berubah <strong style="color:#FF6030;">merah membara</strong> dengan efek api. Peluang dapat hadiah naik <strong style="color:#FF6030;">+20%</strong> — lebih kuat dari Electric Boost biasa!
+        </div>
+        <div style="margin-top:10px;height:4px;background:rgba(255,60,0,0.15);border-radius:4px;overflow:hidden;">
+          <div style="height:100%;width:10%;background:linear-gradient(90deg,#FF6030,#FF9000);border-radius:4px;"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tips & Tricks -->
+    <div style="background:var(--bg2);border:1.5px solid var(--border);border-radius:16px;padding:20px 24px;">
+      <div style="font-family:'Black Han Sans',sans-serif;font-size:14px;color:var(--text);
+           letter-spacing:0.06em;margin-bottom:14px;display:flex;align-items:center;gap:8px;">
+        <span>💡</span> TIPS & TRIK
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;">
+        <div class="htplay-tip">🎵 Klik tombol <strong>🎵</strong> untuk ganti tema musik sesuai mood</div>
+        <div class="htplay-tip">🌙 Klik <strong>🌙</strong> untuk beralih ke mode terang/gelap</div>
+        <div class="htplay-tip">❓ Klik <strong>❓</strong> untuk buka panduan interaktif kapan saja</div>
+        <div class="htplay-tip">📸 Selalu <strong>screenshot</strong> hasil sebelum tutup halaman!</div>
+        <div class="htplay-tip">⏰ Klaim hadiah max <strong>1×24 jam</strong> setelah spin dilakukan</div>
+        <div class="htplay-tip">🔥 <strong>Red Boost</strong> hanya 10% — kalau dapat, kamu beruntung!</div>
+      </div>
+    </div>
+
+  </div>
+
   <!-- ELECTRIC BOOST FLASH OVERLAY -->
   <div class="boost-flash-overlay" id="boostFlashOverlay"></div>
   <!-- RED ELECTRIC BOOST FLASH OVERLAY -->
   <div class="red-boost-flash-overlay" id="redBoostFlashOverlay"></div>
 
-  <!-- AUDIO CONTROL -->
-  <button class="audio-btn" id="audioBtn" onclick="toggleMute()" title="Mute/Unmute">🔊</button>
+  <!-- AUDIO CONTROL — pojok kanan bawah -->
+  <button class="audio-btn" id="audioBtn" onclick="toggleMute()" title="Mute/Unmute"
+    style="right:16px; bottom:16px;">🔊</button>
 
   <!-- MUSIC THEME SELECTOR -->
   <div id="musicSelectorPanel" style="
@@ -2145,6 +2724,7 @@
       <span style="font-size:11px;color:var(--muted);">🔊</span>
     </div>
   </div>
+  <!-- Tombol 🎵 — sebelah kiri tombol 🔊 -->
   <button class="audio-btn" id="musicThemeBtn" onclick="toggleMusicPanel()" title="Pilih Tema Musik"
     style="right:62px; bottom:16px;">🎵</button>
 
@@ -2352,6 +2932,22 @@
     <div class="jackpot-flash"></div>
   </div>
 
+  <!-- CINEMATIC REVEAL OVERLAY -->
+  <div class="cinematic-overlay" id="cinematicOverlay">
+    <div class="cinematic-bar-top"   id="cinematicBarTop"></div>
+    <div class="cinematic-bar-bot"   id="cinematicBarBot"></div>
+    <div class="cinematic-vignette"></div>
+    <div class="cinematic-scanline"></div>
+    <canvas class="cinematic-speedlines" id="cinematicSpeedlines"></canvas>
+    <div class="cinematic-prize-wrap" id="cinematicPrizeWrap">
+      <div class="cinematic-label" id="cinematicLabel">HASIL SPIN</div>
+      <div class="cinematic-emoji-big" id="cinematicEmoji">🎉</div>
+      <div class="cinematic-prize-name" id="cinematicPrizeName">HADIAH</div>
+      <div class="cinematic-sub" id="cinematicSub"></div>
+    </div>
+    <div class="cinematic-flash" id="cinematicFlash"></div>
+  </div>
+
   <!-- KONFIRMASI SPIN -->
   <div class="confirm-overlay" id="confirmOverlay">
     <div class="confirm-box">
@@ -2487,7 +3083,7 @@ const WA_NUMBER      = "62895342072060";
 // ─── DATA HADIAH ─────────────────────────────────────
 const PRIZES = [
   { label: "🏆 Crocs Classic Clog 1pcs", color: "#00CFFF", weight: 0,  emoji: "🏆" },
-  { label: "💰 DANA KAGET 35RB",                color: "#7B2FFF", weight: 7,  emoji: "💰" },
+  { label: "💰 DANA KAGET 30RB",                color: "#7B2FFF", weight: 7,  emoji: "💰" },
   { label: "🎁 DANA KAGET 20RB",             color: "#00BFFF", weight: 8, emoji: "🎁" },
   { label: "🎟️ Diskon 30RB",             color: "#9B59B6", weight: 34, emoji: "🎟️" },
   { label: "😔 Coba Lagi",               color: "#455A64", weight: 51, emoji: "😔" },
@@ -3008,6 +3604,9 @@ async function confirmSpin() {
   for (let i = 0; i < winnerIdx; i++) {
     sliceStart += (DRAW_PRIZES[i].weight / TOTAL_WEIGHT_DRAW) * Math.PI * 2;
   }
+
+  // ── Hint roda: sekilas bocorkan segmen sebelum spin dimulai ──
+  showWheelHint(winnerIdx);
   const sliceMid    = sliceStart + (DRAW_PRIZES[winnerIdx].weight / TOTAL_WEIGHT_DRAW) * Math.PI;
   // Boost: putaran lebih banyak (8-12x vs 5-9x) = lebih cepat & dramatis
   const spinCount   = isBoostActive ? (8 + Math.floor(Math.random() * 5)) : (5 + Math.floor(Math.random() * 4));
@@ -3028,6 +3627,8 @@ async function confirmSpin() {
 
   function animate(now) {
     const t = Math.min((now - startTime) / duration, 1);
+    // Hapus hint begitu roda mulai berputar
+    if (t > 0.02 && hintActive) clearWheelHint();
     currentAngle = startAngle + (targetAngle - startAngle) * easeFn(t);
     drawWheel(currentAngle, isBoostActive, isRedBoostActive);
 
@@ -3078,7 +3679,8 @@ async function finishSpin(winnerIdx, wasBoost = false, wasRedBoost = false) {
     codeFeedback.textContent = '';
     codeFeedback.className   = 'code-feedback';
     codeInput.classList.remove('valid', 'invalid');
-    showResult(prize, null, false, false);
+    // Cinematic reveal dulu, baru modal
+    showCinematicReveal(prize, () => showResult(prize, null, false, false));
     return;
   }
 
@@ -3104,7 +3706,8 @@ async function finishSpin(winnerIdx, wasBoost = false, wasRedBoost = false) {
   statusText.textContent   = 'Masukkan kode untuk memulai';
   currentCode = '';
 
-  showResult(prize, usedCodeForVoucher, wasBoost, wasRedBoost);
+  // Cinematic reveal dulu, baru tampil modal
+  showCinematicReveal(prize, () => showResult(prize, usedCodeForVoucher, wasBoost, wasRedBoost));
 }
 
 // ─── RESULT MODAL ────────────────────────────────────
@@ -3169,23 +3772,6 @@ function showResult(prize, usedCodeForVoucher, wasBoost = false, wasRedBoost = f
   }
 
   document.getElementById('modal').classList.add('show');
-
-  // Efek suara & visual
-  if (isReSpin) {
-    launchConfetti();
-    playReSpinSound();
-  } else if (isTryAgain) {
-    playLoseSound();
-  } else if (JACKPOT_LABELS.includes(prize.label)) {
-    launchConfetti();
-    triggerJackpot();
-    playJackpotSound();
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200, 50, 200]);
-  } else {
-    launchConfetti();
-    playWinSound();
-    if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-  }
 }
 
 function closeModal() {
@@ -3421,6 +4007,8 @@ function startGame() {
   setTimeout(() => {
     overlay.style.display = 'none';
     startAmbient(); // Mulai audio setelah user interaksi (syarat browser)
+    // Auto-start tutorial untuk user baru
+    setTimeout(() => startTutorial(false), 600);
   }, 300);
 }
 
@@ -3816,126 +4404,12 @@ let ambientRunning  = false;
 let chipInterval    = null;
 let melodyInterval  = null;
 
-function startAmbient() {
-  if (ambientRunning || isMuted) return;
-  ambientRunning = true;
-  const actx = getAudioCtx();
-
-  ambientGainNode = actx.createGain();
-  ambientGainNode.gain.value = 0;
-  ambientGainNode.connect(actx.destination);
-  ambientGainNode.gain.linearRampToValueAtTime(0.18, actx.currentTime + 3);
-
-  // 1. Bass drone
-  function makeDrone(freq, vol) {
-    const osc    = actx.createOscillator();
-    const gain   = actx.createGain();
-    const filter = actx.createBiquadFilter();
-    osc.type             = 'sine';
-    osc.frequency.value  = freq;
-    filter.type          = 'lowpass';
-    filter.frequency.value = 200;
-    gain.gain.value      = vol;
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(ambientGainNode);
-    osc.start();
-    ambientNodes.push(osc);
-  }
-  makeDrone(55,  0.4);
-  makeDrone(82,  0.2);
-  makeDrone(110, 0.1);
-
-  // 2. Chord melodi latar
-  const chords = [
-    [261, 329, 392],
-    [293, 369, 440],
-    [261, 329, 392],
-    [246, 311, 369],
-  ];
-  let chordIdx = 0;
-
-  function playChord() {
-    if (!ambientRunning || isMuted) return;
-    chords[chordIdx % chords.length].forEach(freq => {
-      const osc  = actx.createOscillator();
-      const gain = actx.createGain();
-      osc.type            = 'sine';
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0, actx.currentTime);
-      gain.gain.linearRampToValueAtTime(0.08, actx.currentTime + 0.3);
-      gain.gain.linearRampToValueAtTime(0.05, actx.currentTime + 1.5);
-      gain.gain.linearRampToValueAtTime(0,    actx.currentTime + 2.5);
-      osc.connect(gain);
-      gain.connect(ambientGainNode);
-      osc.start();
-      osc.stop(actx.currentTime + 2.8);
-    });
-    chordIdx++;
-  }
-  playChord();
-  melodyInterval = setInterval(() => { if (ambientRunning && !isMuted) playChord(); }, 3000);
-
-  // 3. Suara chip kasino (random)
-  function playChip() {
-    if (!ambientRunning || isMuted) return;
-    const buf    = actx.createBuffer(1, actx.sampleRate * 0.05, actx.sampleRate);
-    const data   = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.008));
-    }
-    const src    = actx.createBufferSource();
-    const gain   = actx.createGain();
-    const filter = actx.createBiquadFilter();
-    src.buffer             = buf;
-    filter.type            = 'highpass';
-    filter.frequency.value = 1500 + Math.random() * 1000;
-    gain.gain.value        = 0.2 + Math.random() * 0.2;
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(ambientGainNode);
-    src.start();
-  }
-  function scheduleChip() {
-    if (!ambientRunning) return;
-    playChip();
-    chipInterval = setTimeout(scheduleChip, 1000 + Math.random() * 3000);
-  }
-  scheduleChip();
-
-  // 4. Hi-hat tipis (ritme)
-  let beat = 0;
-  const beatInterval = setInterval(() => {
-    if (!ambientRunning || isMuted) return;
-    beat++;
-    const isAccent = beat % 4 === 1 || beat % 4 === 3;
-    const buf    = actx.createBuffer(1, actx.sampleRate * 0.03, actx.sampleRate);
-    const data   = buf.getChannelData(0);
-    for (let i = 0; i < data.length; i++) {
-      data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.003));
-    }
-    const src    = actx.createBufferSource();
-    const gain   = actx.createGain();
-    const filter = actx.createBiquadFilter();
-    src.buffer             = buf;
-    filter.type            = 'highpass';
-    filter.frequency.value = 8000;
-    gain.gain.value        = isAccent ? 0.08 : 0.03;
-    src.connect(filter);
-    filter.connect(gain);
-    gain.connect(ambientGainNode);
-    src.start();
-    ambientNodes.push(src);
-  }, 500);
-  ambientNodes.push({ stop: () => clearInterval(beatInterval) });
-}
-
 function stopAmbient() {
   ambientRunning = false;
   if (chipInterval)   { clearTimeout(chipInterval);   chipInterval = null; }
   if (melodyInterval) { clearInterval(melodyInterval); melodyInterval = null; }
   if (ambientGainNode) {
-    ambientGainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 1);
+    try { ambientGainNode.gain.linearRampToValueAtTime(0, getAudioCtx().currentTime + 1); } catch(e) {}
     setTimeout(() => {
       ambientNodes.forEach(n => { try { n.stop(); } catch(e) {} });
       ambientNodes    = [];
@@ -4383,21 +4857,80 @@ function setMusicVolume(val) {
 }
 
 // Override startAmbient untuk support multi-tema
-const _origStartAmbient = startAmbient;
 function startAmbient() {
   if (ambientRunning || isMuted) return;
   const theme = currentMusicTheme || 'electro';
-  if (theme === 'electro') { _origStartAmbient(); return; }
 
-  ambientRunning = true;
-  const actx = getAudioCtx();
+  ambientRunning  = true;
+  const actx      = getAudioCtx();
   ambientGainNode = actx.createGain();
   ambientGainNode.gain.value = 0;
   ambientGainNode.connect(actx.destination);
-  ambientGainNode.gain.linearRampToValueAtTime(musicVolume * 0.36, actx.currentTime + 3);
+  ambientGainNode.gain.linearRampToValueAtTime(
+    musicVolume * 0.36, actx.currentTime + 3
+  );
 
-  if (theme === 'lofi') {
-    // Lo-fi: warm bass + slow chord + vinyl crackle
+  if (theme === 'electro') {
+    // ── ELECTRO / GAMING ──
+    function makeDrone(freq, vol) {
+      const osc = actx.createOscillator(), gain = actx.createGain(), flt = actx.createBiquadFilter();
+      osc.type = 'sine'; osc.frequency.value = freq;
+      flt.type = 'lowpass'; flt.frequency.value = 200;
+      gain.gain.value = vol;
+      osc.connect(flt); flt.connect(gain); gain.connect(ambientGainNode); osc.start();
+      ambientNodes.push(osc);
+    }
+    makeDrone(55, 0.4); makeDrone(82, 0.2); makeDrone(110, 0.1);
+
+    const chords = [[261,329,392],[293,369,440],[261,329,392],[246,311,369]];
+    let chordIdx = 0;
+    function playChord() {
+      if (!ambientRunning || isMuted) return;
+      chords[chordIdx % chords.length].forEach(freq => {
+        const osc = actx.createOscillator(), gain = actx.createGain();
+        osc.type = 'sine'; osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, actx.currentTime);
+        gain.gain.linearRampToValueAtTime(0.08, actx.currentTime + 0.3);
+        gain.gain.linearRampToValueAtTime(0.05, actx.currentTime + 1.5);
+        gain.gain.linearRampToValueAtTime(0,    actx.currentTime + 3);
+        osc.connect(gain); gain.connect(ambientGainNode); osc.start(); osc.stop(actx.currentTime + 3.5);
+      });
+      chordIdx++;
+    }
+    playChord();
+    melodyInterval = setInterval(() => { if (ambientRunning && !isMuted) playChord(); }, 3000);
+
+    // Chip / sparkle
+    function scheduleChip() {
+      if (!ambientRunning) return;
+      const freq = 800 + Math.random() * 1200;
+      const osc  = actx.createOscillator(), gain = actx.createGain();
+      osc.type = 'sine'; osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.06, actx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, actx.currentTime + 0.15);
+      osc.connect(gain); gain.connect(ambientGainNode); osc.start(); osc.stop(actx.currentTime + 0.2);
+      chipInterval = setTimeout(scheduleChip, 400 + Math.random() * 1200);
+    }
+    scheduleChip();
+
+    // Hi-hat
+    let beat = 0;
+    const beatIv = setInterval(() => {
+      if (!ambientRunning || isMuted) return;
+      beat++;
+      const buf  = actx.createBuffer(1, actx.sampleRate * 0.03, actx.sampleRate);
+      const data = buf.getChannelData(0);
+      for (let i = 0; i < data.length; i++) data[i] = (Math.random()*2-1) * Math.exp(-i/(actx.sampleRate*0.003));
+      const src  = actx.createBufferSource(), gain = actx.createGain(), flt = actx.createBiquadFilter();
+      src.buffer = buf; flt.type = 'highpass'; flt.frequency.value = 8000;
+      gain.gain.value = beat % 4 === 1 ? 0.08 : 0.03;
+      src.connect(flt); flt.connect(gain); gain.connect(ambientGainNode); src.start();
+      ambientNodes.push(src);
+    }, 500);
+    ambientNodes.push({ stop: () => clearInterval(beatIv) });
+
+  } else if (theme === 'lofi') {
+    // ── LO-FI CHILL ──
     [55, 82].forEach(f => {
       const o = actx.createOscillator(), g = actx.createGain(), flt = actx.createBiquadFilter();
       o.type = 'triangle'; o.frequency.value = f;
@@ -4423,21 +4956,20 @@ function startAmbient() {
     }
     playLofi();
     melodyInterval = setInterval(() => { if (ambientRunning && !isMuted) playLofi(); }, 4500);
-    // Vinyl crackle
     function crackle() {
       if (!ambientRunning) return;
       const buf = actx.createBuffer(1, actx.sampleRate * 0.02, actx.sampleRate);
       const d = buf.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * 0.04 * Math.exp(-i / 200);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1)*0.04*Math.exp(-i/200);
       const s = actx.createBufferSource(), g = actx.createGain();
-      s.buffer = buf; g.gain.value = 0.3 + Math.random() * 0.4;
+      s.buffer = buf; g.gain.value = 0.3 + Math.random()*0.4;
       s.connect(g); g.connect(ambientGainNode); s.start();
-      chipInterval = setTimeout(crackle, 800 + Math.random() * 2500);
+      chipInterval = setTimeout(crackle, 800 + Math.random()*2500);
     }
     crackle();
 
   } else if (theme === 'hype') {
-    // Hype/Trap: heavy sub bass + trap hi-hat + energetic chord
+    // ── HYPE / TRAP ──
     [40, 60, 80].forEach((f, i) => {
       const o = actx.createOscillator(), g = actx.createGain(), flt = actx.createBiquadFilter();
       o.type = 'sawtooth'; o.frequency.value = f;
@@ -4462,20 +4994,18 @@ function startAmbient() {
     }
     playHype();
     melodyInterval = setInterval(() => { if (ambientRunning && !isMuted) playHype(); }, 2000);
-    // Trap hi-hat
     let beat2 = 0;
     chipInterval = setInterval(() => {
       if (!ambientRunning || isMuted) return;
       beat2++;
-      const isHard = beat2 % 8 === 1;
       const buf = actx.createBuffer(1, actx.sampleRate * 0.04, actx.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = (Math.random() * 2 - 1) * Math.exp(-i / (actx.sampleRate * 0.006));
+      const d   = buf.getChannelData(0);
+      for (let i = 0; i < d.length; i++) d[i] = (Math.random()*2-1)*Math.exp(-i/(actx.sampleRate*0.006));
       const s = actx.createBufferSource(), g = actx.createGain(), flt = actx.createBiquadFilter();
       s.buffer = buf; flt.type = 'highpass'; flt.frequency.value = 8000;
-      g.gain.value = isHard ? 0.5 : 0.2;
+      g.gain.value = beat2 % 8 === 1 ? 0.5 : 0.2;
       s.connect(flt); flt.connect(g); g.connect(ambientGainNode); s.start();
-    }, 125); // 120BPM hi-hat
+    }, 125);
   }
 }
 
@@ -4577,9 +5107,471 @@ async function resetBoostStats() {
   refreshBoostStats();
 }
 
+// ══════════════════════════════════════════════════════
+//  ONBOARDING TUTORIAL
+// ══════════════════════════════════════════════════════
+
+const TUTORIAL_DONE_KEY = 'tutorialDone_v2';
+
+// Definisi setiap langkah tutorial
+// targetId: id elemen yang di-spotlight (null = center screen)
+// pos: posisi card (top/bottom/center, left/right/center)
+const TUTORIAL_STEPS = [
+  {
+    emoji: '👋',
+    title: 'Selamat Datang di\nSuper Lucky Draw!',
+    desc:  'Panduan singkat ini akan memandu kamu cara bermain. Hanya butuh <strong>30 detik</strong>!',
+    targetId: null,
+    pos: 'center',
+    arrow: null,
+  },
+  {
+    emoji: '🔑',
+    title: 'Masukkan Kode Unik',
+    desc:  'Ketik <strong>kode unik</strong> yang kamu dapat (contoh: <span class="tag-gold">XXXX-XXXX</span>) di kolom input ini.',
+    targetId: 'codeInput',
+    pos: 'top-center',
+    arrow: '⬇️',
+    arrowRot: '0deg',
+  },
+  {
+    emoji: '✅',
+    title: 'Verifikasi Kode',
+    desc:  'Tekan tombol ini untuk cek kode kamu. Kode hanya bisa digunakan <span class="tag-gold">1 kali saja</span>!',
+    targetId: 'unlockBtn',
+    pos: 'top-center',
+    arrow: '⬇️',
+    arrowRot: '0deg',
+  },
+  {
+    emoji: '🎰',
+    title: 'Putar Roda!',
+    desc:  'Setelah kode valid, klik tombol <strong>SPIN</strong> di tengah roda. Pastikan kamu siap — tidak bisa diulangi!',
+    targetId: 'spinBtn',
+    pos: 'bottom-center',
+    arrow: '⬆️',
+    arrowRot: '180deg',
+  },
+  {
+    emoji: '⚡',
+    title: 'Electric Boost!',
+    desc:  'Kadang roda berubah <span class="tag-blue">biru elektrik</span> — ini <strong>Electric Boost</strong>! Peluang dapat hadiah naik <span class="tag-blue">+10%</span>.<br><br>Atau berubah <span class="tag-red">merah api</span> — <strong>Red Electric Boost</strong>! Peluang naik <span class="tag-red">+20%</span>. Lebih langka!',
+    targetId: 'wheelWrapper',
+    pos: 'bottom-center',
+    arrow: '⬆️',
+    arrowRot: '180deg',
+  },
+  {
+    emoji: '🏆',
+    title: 'Hadiah & Cara Klaim',
+    desc:  'Kalau menang, langsung <strong>screenshot</strong> hasilnya dan klik tombol <span class="tag-gold">Klaim via WhatsApp</span>. Hadiah wajib diklaim dalam <strong>1x24 jam</strong>!',
+    targetId: null,
+    pos: 'center',
+    arrow: null,
+  },
+  {
+    emoji: '🏅',
+    title: 'Leaderboard',
+    desc:  'Nama kamu akan muncul di <strong>Leaderboard</strong> setelah berhasil klaim hadiah. Tunjukkan ke teman-teman kamu! 🎉',
+    targetId: 'lbSection',
+    pos: 'top-center',
+    arrow: '⬇️',
+    arrowRot: '0deg',
+  },
+  {
+    emoji: '🎵',
+    title: 'Tips Tambahan',
+    desc:  '• Tombol <strong>🎵</strong> — ganti tema musik<br>• Tombol <strong>🌙</strong> — ganti tema terang/gelap<br>• Tombol <strong>❓</strong> — buka panduan ini kapan saja<br>• Baca <strong>S&K</strong> untuk info lengkap boost',
+    targetId: null,
+    pos: 'center',
+    arrow: null,
+  },
+];
+
+let tutStep = 0;
+let tutActive = false;
+
+function startTutorial(force = false) {
+  // Cek apakah sudah pernah selesai (skip jika sudah, kecuali force)
+  if (!force && localStorage.getItem(TUTORIAL_DONE_KEY) === '1') return;
+  tutStep  = 0;
+  tutActive = true;
+  tutShowStep();
+}
+
+function tutShowStep() {
+  const step = TUTORIAL_STEPS[tutStep];
+  if (!step) { tutEnd(); return; }
+
+  const card      = document.getElementById('tutCard');
+  const overlay   = document.getElementById('tutOverlay');
+  const spotlight = document.getElementById('tutSpotlight');
+  const arrow     = document.getElementById('tutArrow');
+
+  // Update dots
+  const dotsEl = document.getElementById('tutDots');
+  dotsEl.innerHTML = TUTORIAL_STEPS.map((_, i) =>
+    `<div class="tutorial-dot ${i < tutStep ? 'done' : (i === tutStep ? 'active' : '')}"></div>`
+  ).join('');
+
+  // Update badge & content
+  document.getElementById('tutEmoji').textContent    = step.emoji;
+  document.getElementById('tutBadgeText').textContent = `LANGKAH ${tutStep + 1} / ${TUTORIAL_STEPS.length}`;
+  document.getElementById('tutTitle').textContent    = step.title;
+  document.getElementById('tutDesc').innerHTML       = step.desc;
+
+  // Last step: ganti tombol
+  const nextBtn = document.getElementById('tutNextBtn');
+  nextBtn.textContent = tutStep === TUTORIAL_STEPS.length - 1 ? '🎉 Mulai Main!' : 'Lanjut →';
+
+  // Show overlay (dim)
+  overlay.classList.add('show');
+
+  // Spotlight & arrow
+  if (step.targetId) {
+    const el = document.getElementById(step.targetId);
+    if (el) {
+      const rect = el.getBoundingClientRect();
+      const pad  = 18;
+      const cx   = rect.left + rect.width  / 2;
+      const cy   = rect.top  + rect.height / 2;
+      const r    = Math.max(rect.width, rect.height) / 2 + pad;
+      spotlight.style.cssText = `
+        left:${cx - r}px; top:${cy - r}px;
+        width:${r*2}px;   height:${r*2}px;
+      `;
+      spotlight.classList.add('show');
+
+      // Arrow
+      if (step.arrow) {
+        arrow.textContent = step.arrow;
+        arrow.style.setProperty('--arrow-rot', step.arrowRot || '0deg');
+        if (step.pos === 'bottom-center') {
+          // Card di bawah elemen → arrow di atas elemen, menunjuk ke atas
+          arrow.style.left = (cx - 16) + 'px';
+          arrow.style.top  = (cy - r - 44) + 'px';
+        } else {
+          // Card di atas elemen → arrow di bawah elemen, menunjuk ke bawah
+          arrow.style.left = (cx - 16) + 'px';
+          arrow.style.top  = (cy + r + 8) + 'px';
+        }
+        arrow.classList.add('show');
+      } else {
+        arrow.classList.remove('show');
+      }
+    }
+  } else {
+    spotlight.classList.remove('show');
+    arrow.classList.remove('show');
+  }
+
+  // Position card
+  tutPositionCard(step);
+  card.classList.add('show');
+}
+
+function tutPositionCard(step) {
+  const card = document.getElementById('tutCard');
+  const vw   = window.innerWidth;
+  const vh   = window.innerHeight;
+
+  // Reset semua posisi
+  card.style.top = card.style.bottom = card.style.left = card.style.right = card.style.transform = '';
+
+  const cardW  = Math.min(310, vw - 32);
+  const cardH  = 300; // estimasi tinggi card
+  const margin = 16;
+  const arrowH = 52;
+
+  if (step.pos === 'center' || !step.targetId) {
+    card.style.top       = '50%';
+    card.style.left      = '50%';
+    card.style.transform = 'translate(-50%, -50%)';
+    return;
+  }
+
+  const el = document.getElementById(step.targetId);
+  if (!el) {
+    card.style.top       = '50%';
+    card.style.left      = '50%';
+    card.style.transform = 'translate(-50%, -50%)';
+    return;
+  }
+
+  const rect = el.getBoundingClientRect();
+  const pad  = 20;
+  const cx   = rect.left + rect.width  / 2;
+  const cy   = rect.top  + rect.height / 2;
+  const r    = Math.max(rect.width, rect.height) / 2 + pad;
+
+  // Posisi X: tengahkan ke elemen, clamp agar tidak keluar layar
+  let cardLeft = cx - cardW / 2;
+  cardLeft = Math.max(margin, Math.min(vw - cardW - margin, cardLeft));
+
+  let cardTop;
+  if (step.pos === 'bottom-center') {
+    // Card di bawah spotlight
+    cardTop = cy + r + arrowH;
+    // Tidak muat di bawah? Taruh di atas
+    if (cardTop + cardH > vh - margin) {
+      cardTop = cy - r - arrowH - cardH;
+    }
+  } else {
+    // top-center: card di atas spotlight
+    cardTop = cy - r - arrowH - cardH;
+    // Tidak muat di atas? Taruh di bawah
+    if (cardTop < margin) {
+      cardTop = cy + r + arrowH;
+    }
+  }
+
+  // Final clamp — jangan sampai keluar layar
+  cardTop = Math.max(margin, Math.min(vh - cardH - margin, cardTop));
+
+  card.style.top  = cardTop + 'px';
+  card.style.left = cardLeft + 'px';
+}
+
+function tutNext() {
+  tutStep++;
+  if (tutStep >= TUTORIAL_STEPS.length) { tutEnd(); return; }
+  // Animate out then in
+  const card = document.getElementById('tutCard');
+  card.style.opacity   = '0';
+  card.style.transform = (card.style.transform || '') + ' translateY(-8px)';
+  setTimeout(() => {
+    card.style.transition = 'none';
+    card.style.opacity    = '';
+    card.style.transform  = '';
+    setTimeout(() => {
+      card.style.transition = '';
+      tutShowStep();
+    }, 20);
+  }, 200);
+}
+
+function tutSkip() { tutEnd(); }
+
+function tutEnd() {
+  tutActive = false;
+  localStorage.setItem(TUTORIAL_DONE_KEY, '1');
+  document.getElementById('tutCard').classList.remove('show');
+  document.getElementById('tutOverlay').classList.remove('show');
+  document.getElementById('tutSpotlight').classList.remove('show');
+  document.getElementById('tutArrow').classList.remove('show');
+}
+
+// Reposition on resize
+window.addEventListener('resize', () => { if (tutActive) tutShowStep(); });
+
+// Update spotlight & arrow saat scroll — card tetap di viewport, spotlight ikut elemen
+let scrollTimer = null;
+window.addEventListener('scroll', () => {
+  if (!tutActive) return;
+  const step = TUTORIAL_STEPS[tutStep];
+  if (!step || !step.targetId) return;
+
+  const el = document.getElementById(step.targetId);
+  if (!el) return;
+
+  const spotlight = document.getElementById('tutSpotlight');
+  const arrow     = document.getElementById('tutArrow');
+  const rect = el.getBoundingClientRect();
+  const pad  = 20;
+  const cx   = rect.left + rect.width  / 2;
+  const cy   = rect.top  + rect.height / 2;
+  const r    = Math.max(rect.width, rect.height) / 2 + pad;
+
+  // Matikan transisi saat scroll biar tidak lag
+  spotlight.style.transition = 'none';
+
+  // Spotlight ikut elemen (position fixed, koordinat viewport)
+  spotlight.style.left   = (cx - r) + 'px';
+  spotlight.style.top    = (cy - r) + 'px';
+  spotlight.style.width  = (r * 2)  + 'px';
+  spotlight.style.height = (r * 2)  + 'px';
+
+  // Arrow ikut elemen juga
+  if (step.arrow) {
+    arrow.style.transition = 'none';
+    if (step.pos === 'bottom-center') {
+      arrow.style.left = (cx - 16) + 'px';
+      arrow.style.top  = (cy - r - 44) + 'px';
+    } else {
+      arrow.style.left = (cx - 16) + 'px';
+      arrow.style.top  = (cy + r + 8) + 'px';
+    }
+  }
+
+  // Nyalakan lagi transisi setelah scroll berhenti
+  clearTimeout(scrollTimer);
+  scrollTimer = setTimeout(() => {
+    spotlight.style.transition = '';
+    arrow.style.transition     = '';
+  }, 150);
+}, { passive: true });
+
+// ─── CINEMATIC REVEAL ─────────────────────────────────
+function showCinematicReveal(prize, callback) {
+  const isTryAgain = prize.label === '😔 Coba Lagi';
+  const isReSpin   = prize.label === '🔄 Re-Spin';
+  const isJackpot  = JACKPOT_LABELS.includes(prize.label);
+
+  const overlay   = document.getElementById('cinematicOverlay');
+  const wrap      = document.getElementById('cinematicPrizeWrap');
+  const label     = document.getElementById('cinematicLabel');
+  const emoji     = document.getElementById('cinematicEmoji');
+  const prizeName = document.getElementById('cinematicPrizeName');
+  const sub       = document.getElementById('cinematicSub');
+  const flash     = document.getElementById('cinematicFlash');
+
+  label.textContent = isTryAgain ? '— HASIL SPIN —' : isJackpot ? '✦ JACKPOT ✦' : isReSpin ? '— BONUS —' : '— HADIAH KAMU —';
+  emoji.textContent = prize.emoji;
+  prizeName.textContent = prize.label;
+  prizeName.className = 'cinematic-prize-name' +
+    (isTryAgain ? ' try-again' : isJackpot ? ' jackpot' : '');
+  sub.textContent = isTryAgain ? 'Semangat, coba lagi next time!'
+    : isReSpin  ? 'Kamu dapat kesempatan putar lagi!'
+    : isJackpot ? 'Selamat! Hadiah utama menunggumu!'
+    : 'Screenshot & klaim via WhatsApp!';
+
+  wrap.className    = 'cinematic-prize-wrap';
+  wrap.style.opacity = '0';
+  flash.className   = 'cinematic-flash';
+
+  // Gambar speed lines
+  const sl = document.getElementById('cinematicSpeedlines');
+  sl.width  = window.innerWidth;
+  sl.height = window.innerHeight;
+  const slCtx = sl.getContext('2d');
+  const scx = sl.width / 2, scy = sl.height / 2;
+  slCtx.clearRect(0, 0, sl.width, sl.height);
+  for (let i = 0; i < 80; i++) {
+    const angle = (i / 80) * Math.PI * 2;
+    const inner = 60 + Math.random() * 40;
+    const outer = Math.max(sl.width, sl.height) * 0.9;
+    slCtx.beginPath();
+    slCtx.moveTo(scx + Math.cos(angle) * inner, scy + Math.sin(angle) * inner);
+    slCtx.lineTo(scx + Math.cos(angle) * outer, scy + Math.sin(angle) * outer);
+    slCtx.strokeStyle = isJackpot ? `rgba(255,200,0,${0.1 + Math.random() * 0.3})`
+                                   : `rgba(0,207,255,${0.08 + Math.random() * 0.25})`;
+    slCtx.lineWidth = 0.5 + Math.random() * 2.5;
+    slCtx.stroke();
+  }
+
+  overlay.classList.add('show');
+
+  setTimeout(() => {
+    flash.classList.add('pop');
+    setTimeout(() => {
+      wrap.classList.add('reveal');
+      if (!isMuted) {
+        if (isJackpot)      playJackpotSound();
+        else if (isTryAgain) playLoseSound();
+        else if (isReSpin)  playReSpinSound();
+        else                playWinSound();
+      }
+      if (!isTryAgain) launchConfetti();
+      if (isJackpot) {
+        triggerJackpot();
+        if (navigator.vibrate) navigator.vibrate([100,50,100,50,200,50,200]);
+      } else if (!isTryAgain) {
+        if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+      }
+
+      const holdTime = isJackpot ? 3000 : isTryAgain ? 1800 : 2400;
+      setTimeout(() => {
+        wrap.classList.remove('reveal');
+        wrap.classList.add('exit');
+        setTimeout(() => {
+          overlay.classList.remove('show');
+          wrap.className     = 'cinematic-prize-wrap';
+          wrap.style.opacity = '0';
+          if (callback) callback();
+        }, 500);
+      }, holdTime);
+    }, 200);
+  }, 400);
+}
+
+// ─── WHEEL HINT ───────────────────────────────────────
+let hintTimeout = null;
+let hintActive  = false;
+
+function showWheelHint(winnerIdx) {
+  if (hintActive) return;
+  hintActive = true;
+
+  const ghost = document.getElementById('hintGhost');
+  const gCtx  = ghost.getContext('2d');
+  const W = ghost.width, H = ghost.height;
+  const cx = W / 2, cy = H / 2, r = W / 2 - 6;
+
+  let sliceStart = 0;
+  for (let i = 0; i < winnerIdx; i++) {
+    sliceStart += (DRAW_PRIZES[i].weight / TOTAL_WEIGHT_DRAW) * Math.PI * 2;
+  }
+  const sliceSize = (DRAW_PRIZES[winnerIdx].weight / TOTAL_WEIGHT_DRAW) * Math.PI * 2;
+  const sliceMid  = sliceStart + sliceSize / 2;
+  // Posisi hint: pointer di atas (-π/2), tambah sedikit noise acak
+  const hintAngle = -Math.PI / 2 - sliceMid + (Math.random() - 0.5) * sliceSize * 0.35;
+
+  gCtx.clearRect(0, 0, W, H);
+  gCtx.save();
+  gCtx.translate(cx, cy);
+  gCtx.rotate(hintAngle);
+  gCtx.translate(-cx, -cy);
+
+  DRAW_PRIZES.forEach((prize, i) => {
+    const s = DRAW_PRIZES.slice(0, i).reduce((acc, p) => acc + (p.weight / TOTAL_WEIGHT_DRAW) * Math.PI * 2, 0);
+    const sl2 = (prize.weight / TOTAL_WEIGHT_DRAW) * Math.PI * 2;
+    gCtx.beginPath();
+    gCtx.moveTo(cx, cy);
+    gCtx.arc(cx, cy, r, s, s + sl2);
+    gCtx.closePath();
+    gCtx.fillStyle = i === winnerIdx ? prize.color + 'BB' : prize.color + '44';
+    gCtx.fill();
+  });
+
+  // Highlight segmen pemenang
+  const ws = DRAW_PRIZES.slice(0, winnerIdx).reduce((acc, p) => acc + (p.weight / TOTAL_WEIGHT_DRAW) * Math.PI * 2, 0);
+  const wsl = (DRAW_PRIZES[winnerIdx].weight / TOTAL_WEIGHT_DRAW) * Math.PI * 2;
+  gCtx.beginPath();
+  gCtx.moveTo(cx, cy);
+  gCtx.arc(cx, cy, r, ws, ws + wsl);
+  gCtx.closePath();
+  gCtx.strokeStyle = 'rgba(255,255,255,0.65)';
+  gCtx.lineWidth   = 3;
+  gCtx.shadowColor = '#00CFFF';
+  gCtx.shadowBlur  = 16;
+  gCtx.stroke();
+  gCtx.shadowBlur  = 0;
+  gCtx.restore();
+
+  ghost.style.transition = 'opacity 0.15s ease';
+  ghost.classList.add('show');
+
+  hintTimeout = setTimeout(() => {
+    ghost.style.transition = 'opacity 0.2s ease';
+    ghost.classList.remove('show');
+    hintTimeout = setTimeout(() => {
+      gCtx.clearRect(0, 0, W, H);
+      hintActive = false;
+    }, 220);
+  }, 350);
+}
+
+function clearWheelHint() {
+  if (hintTimeout) clearTimeout(hintTimeout);
+  const ghost = document.getElementById('hintGhost');
+  ghost.classList.remove('show');
+  ghost.getContext('2d').clearRect(0, 0, ghost.width, ghost.height);
+  hintActive = false;
+}
+
+// ─── START ───────────────────────────────────────────
 initCodes();
 renderUsedCodes();
-// Init leaderboard dari Sheets saat halaman buka
 renderLeaderboard();
 </script>
 </body>
