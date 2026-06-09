@@ -2271,6 +2271,245 @@
       color: var(--accent);
       box-shadow: 0 0 12px rgba(0,207,255,0.3);
     }
+
+    /* ══ ABOUT THIS EVENT BUTTON ══ */
+    .about-event-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      margin-top: 14px;
+      padding: 9px 20px;
+      border-radius: 30px;
+      border: 1.5px solid rgba(0,207,255,0.35);
+      background: rgba(0,207,255,0.06);
+      color: var(--gold);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: all 0.2s;
+      backdrop-filter: blur(6px);
+    }
+    .about-event-btn:hover {
+      background: rgba(0,207,255,0.13);
+      border-color: rgba(0,207,255,0.6);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(0,207,255,0.18);
+    }
+    .about-event-btn .about-arrow {
+      font-size: 11px;
+      transition: transform 0.2s;
+    }
+    .about-event-btn:hover .about-arrow { transform: translateX(3px); }
+
+    /* ══ ABOUT PAGE OVERLAY ══ */
+    .about-page {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 5000;
+      background: var(--bg);
+      overflow-y: auto;
+      animation: aboutSlideIn 0.35s cubic-bezier(0.4,0,0.2,1) both;
+    }
+    .about-page.show { display: block; }
+    .about-page.exit { animation: aboutSlideOut 0.3s cubic-bezier(0.4,0,0.2,1) both; }
+
+    @keyframes aboutSlideIn {
+      from { opacity: 0; transform: translateX(40px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    @keyframes aboutSlideOut {
+      from { opacity: 1; transform: translateX(0); }
+      to   { opacity: 0; transform: translateX(40px); }
+    }
+
+    .about-page-inner {
+      max-width: 760px;
+      margin: 0 auto;
+      padding: 32px 20px 80px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* back bar */
+    .about-back-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 32px;
+    }
+    .about-back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 9px 18px;
+      border-radius: 30px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .about-back-btn:hover {
+      border-color: rgba(0,207,255,0.5);
+      color: var(--gold);
+      background: rgba(0,207,255,0.06);
+    }
+
+    /* hero */
+    .about-hero {
+      text-align: center;
+      margin-bottom: 40px;
+      padding: 40px 20px 32px;
+      background: linear-gradient(135deg, rgba(0,207,255,0.06), rgba(123,47,255,0.06));
+      border: 1.5px solid var(--border);
+      border-radius: 24px;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-hero::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(0,207,255,0.12), transparent 60%);
+      pointer-events: none;
+    }
+    .about-hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(0,207,255,0.1);
+      border: 1px solid rgba(0,207,255,0.3);
+      border-radius: 30px;
+      padding: 6px 18px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 18px;
+    }
+    .about-hero h2 {
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: clamp(2rem, 7vw, 3.2rem);
+      line-height: 1;
+      background: linear-gradient(135deg, #00CFFF 0%, #7B2FFF 60%, #00CFFF 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 12px;
+    }
+    .about-hero-sub {
+      font-size: 15px;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto;
+      line-height: 1.65;
+    }
+
+    /* section cards */
+    .about-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 24px 26px;
+      margin-bottom: 16px;
+    }
+    .about-section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 15px;
+      color: var(--text);
+      letter-spacing: 0.05em;
+      margin-bottom: 14px;
+    }
+    .about-section-icon {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .about-section p {
+      font-size: 13.5px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 10px;
+    }
+    .about-section p:last-child { margin-bottom: 0; }
+    .about-section strong { color: var(--text); }
+    .about-section .highlight {
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    /* info grid */
+    .about-info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      gap: 12px;
+      margin-top: 16px;
+    }
+    .about-info-item {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 14px 16px;
+      text-align: center;
+    }
+    .about-info-item .aii-emoji { font-size: 22px; margin-bottom: 6px; }
+    .about-info-item .aii-label { font-size: 10px; font-weight: 700; letter-spacing: 0.12em; color: var(--muted); text-transform: uppercase; margin-bottom: 4px; }
+    .about-info-item .aii-val   { font-size: 14px; font-weight: 700; color: var(--text); }
+
+    /* prize chips */
+    .about-prize-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+    .about-prize-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1px solid var(--border);
+      background: var(--bg2);
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    /* cta */
+    .about-cta {
+      text-align: center;
+      margin-top: 32px;
+    }
+    .about-cta-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 14px 36px;
+      border-radius: 30px;
+      border: none;
+      background: linear-gradient(135deg, #00CFFF, #7B2FFF);
+      color: #000;
+      font-family: 'Black Han Sans', sans-serif;
+      font-size: 15px;
+      letter-spacing: 0.06em;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: 0 6px 24px rgba(0,150,255,0.35);
+    }
+    .about-cta-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(0,150,255,0.5); }
   </style>
 
   <!-- ══ ONBOARDING TUTORIAL ══ -->
@@ -2446,6 +2685,9 @@
       <div class="header-badge">⚡ Special Event</div>
       <h1>SUPER LUCKY DRAW</h1>
       <p class="header-sub">⚡ Masukkan kode unikmu untuk memutar roda keberuntungan ⚡</p>
+      <button class="about-event-btn" onclick="openAboutPage()">
+        ℹ️ About This Event <span class="about-arrow">→</span>
+      </button>
     </div>
 
     <!-- EVENT COUNTDOWN BANNER -->
@@ -5573,6 +5815,206 @@ function clearWheelHint() {
 initCodes();
 renderUsedCodes();
 renderLeaderboard();
+
+// ─── ABOUT PAGE ──────────────────────────────────────
+function openAboutPage() {
+  const page = document.getElementById('aboutPage');
+  page.classList.remove('exit');
+  page.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  page.scrollTop = 0;
+}
+
+function closeAboutPage() {
+  const page = document.getElementById('aboutPage');
+  page.classList.add('exit');
+  setTimeout(() => {
+    page.classList.remove('show', 'exit');
+    document.body.style.overflow = '';
+  }, 300);
+}
 </script>
+
+<!-- ══ ABOUT THIS EVENT PAGE ══ -->
+<div class="about-page" id="aboutPage">
+  <!-- Bg effects (reuse stars) -->
+  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;
+    background:radial-gradient(ellipse 60% 50% at 20% 20%,rgba(0,150,255,0.07) 0%,transparent 60%),
+               radial-gradient(ellipse 50% 60% at 80% 80%,rgba(120,0,255,0.06) 0%,transparent 60%);"></div>
+
+  <div class="about-page-inner">
+
+    <!-- Back button bar -->
+    <div class="about-back-bar">
+      <button class="about-back-btn" onclick="closeAboutPage()">
+        ← Kembali
+      </button>
+    </div>
+
+    <!-- Hero -->
+    <div class="about-hero">
+      <div class="about-hero-badge">⚡ Special Event · Source Crocs</div>
+      <h2>SUPER LUCKY DRAW</h2>
+      <p class="about-hero-sub">Event eksklusif berhadiah menarik khusus pelanggan setia Source Crocs. Belanja, spin, dan menangkan hadiah impianmu!</p>
+    </div>
+
+    <!-- Tentang Event -->
+    <div class="about-section">
+      <div class="about-section-title">
+        <div class="about-section-icon" style="background:linear-gradient(135deg,rgba(0,207,255,0.2),rgba(123,47,255,0.15));">🎯</div>
+        Tentang Event Ini
+      </div>
+      <p><strong>Super Lucky Draw</strong> adalah program undian berhadiah eksklusif yang diselenggarakan oleh <strong>Source Crocs</strong> sebagai bentuk apresiasi kepada pelanggan setia kami.</p>
+      <p>Setiap transaksi pembelian di toko kami akan mendapatkan <span class="highlight">kode unik</span> yang dapat digunakan untuk memutar roda keberuntungan dan memenangkan hadiah-hadiah menarik.</p>
+      <p>Event ini dirancang untuk memberikan pengalaman berbelanja yang lebih menyenangkan dan menguntungkan bagi kamu!</p>
+    </div>
+
+    <!-- Info Event -->
+    <div class="about-section">
+      <div class="about-section-title">
+        <div class="about-section-icon" style="background:linear-gradient(135deg,rgba(255,200,0,0.2),rgba(255,100,0,0.12));">📋</div>
+        Informasi Event
+      </div>
+      <div class="about-info-grid">
+        <div class="about-info-item">
+          <div class="aii-emoji">🏪</div>
+          <div class="aii-label">Penyelenggara</div>
+          <div class="aii-val">Source Crocs</div>
+        </div>
+        <div class="about-info-item">
+          <div class="aii-emoji">🎟️</div>
+          <div class="aii-label">Cara Dapat Kode</div>
+          <div class="aii-val">Belanja di Toko</div>
+        </div>
+        <div class="about-info-item">
+          <div class="aii-emoji">🔄</div>
+          <div class="aii-label">Spin per Kode</div>
+          <div class="aii-val">1× Spin</div>
+        </div>
+        <div class="about-info-item">
+          <div class="aii-emoji">⏰</div>
+          <div class="aii-label">Batas Klaim</div>
+          <div class="aii-val">1×24 Jam</div>
+        </div>
+        <div class="about-info-item">
+          <div class="aii-emoji">📱</div>
+          <div class="aii-label">Klaim Via</div>
+          <div class="aii-val">WhatsApp</div>
+        </div>
+        <div class="about-info-item">
+          <div class="aii-emoji">✅</div>
+          <div class="aii-label">Status</div>
+          <div class="aii-val" style="color:#00C853;">Aktif</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Hadiah -->
+    <div class="about-section">
+      <div class="about-section-title">
+        <div class="about-section-icon" style="background:linear-gradient(135deg,rgba(255,215,0,0.25),rgba(255,140,0,0.15));">🏆</div>
+        Daftar Hadiah
+      </div>
+      <p>Roda keberuntungan berisi berbagai hadiah menarik. Setiap spin bersifat acak — boost aktif akan meningkatkan peluangmu!</p>
+      <div class="about-prize-chips" id="aboutPrizeChips">
+        <!-- Filled by JS -->
+      </div>
+    </div>
+
+    <!-- Boost System -->
+    <div class="about-section">
+      <div class="about-section-title">
+        <div class="about-section-icon" style="background:linear-gradient(135deg,rgba(0,207,255,0.2),rgba(0,100,255,0.12));">⚡</div>
+        Sistem Boost Eksklusif
+      </div>
+      <p>Super Lucky Draw punya dua sistem <strong>boost</strong> yang muncul secara acak untuk meningkatkan peluang menangmu:</p>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-top:12px;">
+        <div style="background:linear-gradient(135deg,rgba(0,207,255,0.08),rgba(0,100,255,0.05));
+             border:1.5px solid rgba(0,207,255,0.3);border-radius:14px;padding:14px 16px;
+             display:flex;align-items:flex-start;gap:12px;">
+          <span style="font-size:22px;flex-shrink:0;">⚡</span>
+          <div>
+            <div style="font-family:'Black Han Sans',sans-serif;font-size:13px;color:#00CFFF;margin-bottom:4px;">ELECTRIC BOOST — Peluang 44%</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.65;">Roda berubah biru elektrik. Peluang hadiah naik <strong style="color:#00CFFF;">+10%</strong> dan "Coba Lagi" makin jarang!</div>
+          </div>
+        </div>
+        <div style="background:linear-gradient(135deg,rgba(255,60,0,0.08),rgba(255,100,0,0.05));
+             border:1.5px solid rgba(255,60,0,0.35);border-radius:14px;padding:14px 16px;
+             display:flex;align-items:flex-start;gap:12px;">
+          <span style="font-size:22px;flex-shrink:0;">🔥</span>
+          <div>
+            <div style="font-family:'Black Han Sans',sans-serif;font-size:13px;color:#FF6030;margin-bottom:4px;">RED ELECTRIC BOOST — Peluang 19% (Langka!)</div>
+            <div style="font-size:12px;color:var(--muted);line-height:1.65;">Roda merah membara dengan efek api. Peluang hadiah naik <strong style="color:#FF6030;">+20%</strong> — lebih kuat dari Electric Boost!</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cara Klaim -->
+    <div class="about-section">
+      <div class="about-section-title">
+        <div class="about-section-icon" style="background:linear-gradient(135deg,rgba(0,200,83,0.2),rgba(0,150,60,0.12));">🎁</div>
+        Cara Klaim Hadiah
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="display:flex;align-items:flex-start;gap:12px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#00CFFF,#7B2FFF);
+               display:flex;align-items:center;justify-content:center;
+               font-family:'Black Han Sans',sans-serif;font-size:12px;color:#000;flex-shrink:0;">1</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;padding-top:4px;"><strong style="color:var(--text);">Screenshot</strong> layar saat hasil hadiah muncul sebagai bukti.</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#00CFFF,#7B2FFF);
+               display:flex;align-items:center;justify-content:center;
+               font-family:'Black Han Sans',sans-serif;font-size:12px;color:#000;flex-shrink:0;">2</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;padding-top:4px;">Klik tombol <strong style="color:var(--text);">"Klaim via WhatsApp"</strong> yang muncul setelah spin.</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#00CFFF,#7B2FFF);
+               display:flex;align-items:center;justify-content:center;
+               font-family:'Black Han Sans',sans-serif;font-size:12px;color:#000;flex-shrink:0;">3</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;padding-top:4px;">Kirim pesan beserta <strong style="color:var(--text);">screenshot bukti</strong> ke admin kami.</div>
+        </div>
+        <div style="display:flex;align-items:flex-start;gap:12px;">
+          <div style="width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg,#00C853,#00A040);
+               display:flex;align-items:center;justify-content:center;
+               font-family:'Black Han Sans',sans-serif;font-size:12px;color:#000;flex-shrink:0;">✓</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.6;padding-top:4px;">Hadiah diproses dan dikirimkan oleh tim Source Crocs. <strong style="color:#00C853;">Klaim maks. 1×24 jam!</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="about-cta">
+      <button class="about-cta-btn" onclick="closeAboutPage()">
+        ⚡ Mulai Spin Sekarang!
+      </button>
+      <p style="font-size:12px;color:var(--muted);margin-top:14px;">
+        Dengan berpartisipasi, kamu menyetujui syarat & ketentuan yang berlaku.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// Populate prize chips on about page from DRAW_PRIZES
+(function() {
+  function tryFillChips() {
+    if (typeof DRAW_PRIZES === 'undefined') { setTimeout(tryFillChips, 300); return; }
+    const container = document.getElementById('aboutPrizeChips');
+    if (!container) return;
+    container.innerHTML = '';
+    DRAW_PRIZES.forEach(function(p) {
+      const chip = document.createElement('div');
+      chip.className = 'about-prize-chip';
+      chip.innerHTML = '<span style="width:10px;height:10px;border-radius:3px;background:' + p.color + ';flex-shrink:0;display:inline-block;"></span>' + p.label;
+      container.appendChild(chip);
+    });
+  }
+  tryFillChips();
+})();
+</script>
+
 </body>
 </html>
