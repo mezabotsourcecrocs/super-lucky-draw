@@ -1720,60 +1720,50 @@
     }
 
     /* ── ELEGANT LOADING STEPS ── */
-    .ck-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      width: 100%;
-      margin: 18px 0 10px;
+    /* single unified loading bar */
+    .ck-unified-wrap {
+      width: 260px;
+      margin: 4px 0 2px;
     }
-    .ck-step {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 10px 14px;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.07);
-      border-radius: 10px;
-      transition: background 0.3s, border-color 0.3s;
-    }
-    .ck-step.active {
-      background: rgba(0,207,255,0.08);
-      border-color: rgba(0,207,255,0.3);
-    }
-    .ck-step.done {
-      background: rgba(0,200,83,0.08);
-      border-color: rgba(0,200,83,0.3);
-    }
-    .ck-step.fail {
-      background: rgba(255,68,68,0.08);
-      border-color: rgba(255,68,68,0.3);
-    }
-    .ck-step-icon { font-size: 18px; width: 24px; text-align: center; flex-shrink: 0; }
-    .ck-step-info { flex: 1; min-width: 0; }
-    .ck-step-label {
-      font-size: 12px;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 5px;
-      letter-spacing: 0.03em;
-    }
-    .ck-step-bar {
-      height: 4px;
+    .ck-unified-bar {
+      height: 6px;
       background: rgba(255,255,255,0.08);
-      border-radius: 4px;
+      border-radius: 6px;
       overflow: hidden;
     }
-    .ck-step-fill {
+    .ck-unified-fill {
       height: 100%;
       width: 0%;
-      border-radius: 4px;
-      background: linear-gradient(90deg, #00CFFF, #7B2FFF);
-      transition: width 0.6s cubic-bezier(.4,0,.2,1);
+      border-radius: 6px;
+      background: linear-gradient(90deg, #00CFFF, #7B2FFF, #00CFFF);
+      background-size: 200% 100%;
+      animation: barShimmer 1.8s linear infinite;
+      transition: width 0.5s cubic-bezier(.4,0,.2,1);
     }
-    .ck-step.done .ck-step-fill  { background: linear-gradient(90deg, #00C853, #00E676); width: 100% !important; }
-    .ck-step.fail .ck-step-fill  { background: #FF4444; }
-    .ck-step-status { font-size: 14px; flex-shrink: 0; transition: all 0.3s; }
+    .ck-unified-fill.done {
+      background: linear-gradient(90deg, #00C853, #00E676);
+      animation: none;
+    }
+    .ck-unified-fill.fail {
+      background: #FF4444;
+      animation: none;
+    }
+    @keyframes barShimmer {
+      0%   { background-position: 200% center; }
+      100% { background-position: -200% center; }
+    }
+    .ck-unified-pct {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      color: var(--gold);
+      margin-top: 7px;
+      text-align: right;
+      font-family: monospace;
+      transition: color 0.3s;
+    }
+    .ck-unified-pct.done { color: #00C853; }
+    .ck-unified-pct.fail { color: #FF4444; }
 
     /* ── MUSIC SELECTOR ── */
     .music-selector {
@@ -2560,40 +2550,11 @@
       <div class="checking-logo">⚡</div>
       <div class="checking-title">SUPER LUCKY DRAW</div>
 
-      <!-- Minimalis elegant loading steps -->
-      <div class="ck-steps" id="ckSteps">
-        <div class="ck-step" id="ckStep1">
-          <div class="ck-step-icon">🌐</div>
-          <div class="ck-step-info">
-            <div class="ck-step-label">Menghubungkan server</div>
-            <div class="ck-step-bar"><div class="ck-step-fill" id="ckFill1"></div></div>
-          </div>
-          <div class="ck-step-status" id="ckStat1">⏳</div>
+      <div class="ck-unified-wrap">
+        <div class="ck-unified-bar">
+          <div class="ck-unified-fill" id="ckUnifiedFill"></div>
         </div>
-        <div class="ck-step" id="ckStep2">
-          <div class="ck-step-icon">🔑</div>
-          <div class="ck-step-info">
-            <div class="ck-step-label">Memuat data kode</div>
-            <div class="ck-step-bar"><div class="ck-step-fill" id="ckFill2"></div></div>
-          </div>
-          <div class="ck-step-status" id="ckStat2">—</div>
-        </div>
-        <div class="ck-step" id="ckStep3">
-          <div class="ck-step-icon">🛡️</div>
-          <div class="ck-step-info">
-            <div class="ck-step-label">Verifikasi keamanan</div>
-            <div class="ck-step-bar"><div class="ck-step-fill" id="ckFill3"></div></div>
-          </div>
-          <div class="ck-step-status" id="ckStat3">—</div>
-        </div>
-        <div class="ck-step" id="ckStep4">
-          <div class="ck-step-icon">✅</div>
-          <div class="ck-step-info">
-            <div class="ck-step-label">Siap bermain</div>
-            <div class="ck-step-bar"><div class="ck-step-fill" id="ckFill4"></div></div>
-          </div>
-          <div class="ck-step-status" id="ckStat4">—</div>
-        </div>
+        <div class="ck-unified-pct" id="ckUnifiedPct">0%</div>
       </div>
 
       <div class="checking-status loading" id="checkingStatus">⏳ Checking server...</div>
@@ -3437,75 +3398,91 @@ function apiCall(params) {
   });
 }
 
-// ─── ELEGANT LOADING STEPS ──────────────────────────
-async function animateCkStep(stepNum, success = true) {
-  const step = document.getElementById(`ckStep${stepNum}`);
-  const fill = document.getElementById(`ckFill${stepNum}`);
-  const stat = document.getElementById(`ckStat${stepNum}`);
-  if (!step) return;
+// ─── UNIFIED LOADING BAR ────────────────────────────
+let ckPct = 0;
+let ckInterval = null;
 
-  step.classList.add('active');
-  stat.textContent = '⏳';
-  // Animate bar
-  let w = 0;
-  await new Promise(res => {
-    const iv = setInterval(() => {
-      w = Math.min(w + Math.random() * 18 + 6, 95);
-      fill.style.width = w + '%';
-      if (w >= 95) { clearInterval(iv); res(); }
-    }, 60);
+function ckSetPct(target, fast = false) {
+  return new Promise(res => {
+    const fill = document.getElementById('ckUnifiedFill');
+    const pct  = document.getElementById('ckUnifiedPct');
+    const speed = fast ? 20 : 40;
+    clearInterval(ckInterval);
+    ckInterval = setInterval(() => {
+      ckPct = Math.min(ckPct + (Math.random() * 4 + 1), target);
+      fill.style.width = ckPct + '%';
+      pct.textContent  = Math.floor(ckPct) + '%';
+      if (ckPct >= target) { clearInterval(ckInterval); res(); }
+    }, speed);
   });
-  await new Promise(res => setTimeout(res, 180));
+}
+
+function ckFinish(success) {
+  clearInterval(ckInterval);
+  const fill = document.getElementById('ckUnifiedFill');
+  const pct  = document.getElementById('ckUnifiedPct');
+  ckPct = 100;
   fill.style.width = '100%';
-  step.classList.remove('active');
+  pct.textContent  = '100%';
   if (success) {
-    step.classList.add('done');
-    stat.textContent = '✅';
+    fill.classList.add('done');
+    pct.classList.add('done');
   } else {
-    step.classList.add('fail');
-    stat.textContent = '❌';
+    fill.classList.add('fail');
+    pct.classList.add('fail');
   }
-  await new Promise(res => setTimeout(res, 120));
+}
+
+function ckReset() {
+  clearInterval(ckInterval);
+  ckPct = 0;
+  const fill = document.getElementById('ckUnifiedFill');
+  const pct  = document.getElementById('ckUnifiedPct');
+  fill.style.width = '0%';
+  fill.classList.remove('done','fail');
+  pct.textContent  = '0%';
+  pct.classList.remove('done','fail');
 }
 
 // ─── INIT ────────────────────────────────────────────
 async function initCodes() {
   setConnStatus('loading', '⏳ Checking server Online Or Not...');
 
-  // Step 1: Menghubungkan server
-  await animateCkStep(1, true);
+  // 0 → 30%: connecting
+  await ckSetPct(30);
 
-  // Step 2 + 3: Load data & security (paralel dengan API call)
-  const p2 = animateCkStep(2, true);
+  // 30 → 75%: load data (real API call happens here)
+  const p2 = ckSetPct(75);
   const [data] = await Promise.all([
     apiCall({ action: 'list' }),
-    new Promise(res => setTimeout(res, 1200)),
+    new Promise(res => setTimeout(res, 800)),
   ]);
   await p2;
-  await animateCkStep(3, data.success);
 
   if (!data.success) {
+    ckFinish(false);
     setConnStatus('error', '❌ Server Disconnected • Check Your Connection');
     const statusEl = document.getElementById('checkingStatus');
-    statusEl.textContent  = 'Server Disconnected • Try Again';
-    statusEl.className    = 'checking-status error';
+    statusEl.textContent = 'Server Disconnected • Try Again';
+    statusEl.className   = 'checking-status error';
     document.getElementById('checkingRetryBtn').style.display = 'block';
     return;
   }
+
+  // 75 → 100%: done
+  await ckSetPct(100, true);
+  ckFinish(true);
 
   validCodes  = new Set(data.available);
   usedCodes   = new Set(data.used);
   isConnected = true;
   setConnStatus('ok', '✅ Server Online • Stable');
 
-  // Step 4: Siap bermain
-  await animateCkStep(4, true);
-
   const statusEl = document.getElementById('checkingStatus');
   statusEl.textContent = '✅ Server Online • Stable';
   statusEl.className   = 'checking-status ok';
 
-  setTimeout(proceedToSnk, 600);
+  setTimeout(proceedToSnk, 500);
   renderUsedCodes();
 }
 
@@ -3521,18 +3498,12 @@ function proceedToSnk() {
 }
 
 function retryChecking() {
-  const bar    = document.getElementById('checkingBar');
+  ckReset();
   const status = document.getElementById('checkingStatus');
   status.textContent = '⏳ Checking server...';
   status.className   = 'checking-status loading';
-  bar.style.transition = 'none';
-  bar.style.width      = '0%';
-  bar.style.background = 'linear-gradient(90deg, #00CFFF, #7B2FFF)';
   document.getElementById('checkingRetryBtn').style.display = 'none';
-  setTimeout(() => {
-    bar.style.transition = 'width 3s linear';
-    initCodes();
-  }, 100);
+  setTimeout(() => { initCodes(); }, 100);
 }
 
 function setConnStatus(type, text) {
@@ -5909,18 +5880,6 @@ function closeAboutPage() {
       </div>
     </div>
 
-    <!-- Hadiah -->
-    <div class="about-section">
-      <div class="about-section-title">
-        <div class="about-section-icon" style="background:linear-gradient(135deg,rgba(255,215,0,0.25),rgba(255,140,0,0.15));">🏆</div>
-        Daftar Hadiah
-      </div>
-      <p>Roda keberuntungan berisi berbagai hadiah menarik. Setiap spin bersifat acak — boost aktif akan meningkatkan peluangmu!</p>
-      <div class="about-prize-chips" id="aboutPrizeChips">
-        <!-- Filled by JS -->
-      </div>
-    </div>
-
     <!-- Boost System -->
     <div class="about-section">
       <div class="about-section-title">
@@ -5984,6 +5943,51 @@ function closeAboutPage() {
       </div>
     </div>
 
+    <!-- Contact -->
+    <div class="about-section">
+      <div class="about-section-title">
+        <div class="about-section-icon" style="background:linear-gradient(135deg,rgba(0,200,83,0.2),rgba(0,150,60,0.12));">📬</div>
+        Hubungi Kami
+      </div>
+      <p>Ada pertanyaan, kendala kode, atau butuh bantuan klaim hadiah? Tim Customer Help Source Crocs siap membantu kamu!</p>
+      <a href="mailto:customerhelpsourcecrocs@gmail.com"
+         style="display:flex;align-items:center;gap:14px;margin-top:14px;padding:16px 20px;
+                border-radius:14px;border:1.5px solid rgba(0,200,83,0.3);
+                background:linear-gradient(135deg,rgba(0,200,83,0.08),rgba(0,150,60,0.05));
+                text-decoration:none;transition:all 0.2s;"
+         onmouseover="this.style.borderColor='rgba(0,200,83,0.6)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(0,200,83,0.15)'"
+         onmouseout="this.style.borderColor='rgba(0,200,83,0.3)';this.style.transform='';this.style.boxShadow=''">
+        <div style="width:42px;height:42px;border-radius:12px;
+                    background:linear-gradient(135deg,#00C853,#00A040);
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:20px;flex-shrink:0;">✉️</div>
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;margin-bottom:3px;">Customer Help</div>
+          <div style="font-size:14px;font-weight:700;color:#00C853;font-family:'Outfit',monospace;letter-spacing:0.02em;">customerhelpsourcecrocs@gmail.com</div>
+        </div>
+        <div style="margin-left:auto;font-size:18px;color:rgba(0,200,83,0.5);">→</div>
+      </a>
+      <a href="https://wa.me/6289534207206"
+         target="_blank"
+         style="display:flex;align-items:center;gap:14px;margin-top:10px;padding:16px 20px;
+                border-radius:14px;border:1.5px solid rgba(37,211,102,0.3);
+                background:linear-gradient(135deg,rgba(37,211,102,0.08),rgba(18,140,60,0.05));
+                text-decoration:none;transition:all 0.2s;"
+         onmouseover="this.style.borderColor='rgba(37,211,102,0.6)';this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 24px rgba(37,211,102,0.15)'"
+         onmouseout="this.style.borderColor='rgba(37,211,102,0.3)';this.style.transform='';this.style.boxShadow=''">
+        <div style="width:42px;height:42px;border-radius:12px;
+                    background:linear-gradient(135deg,#25D366,#128C3C);
+                    display:flex;align-items:center;justify-content:center;
+                    font-size:22px;flex-shrink:0;">💬</div>
+        <div>
+          <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;margin-bottom:3px;">WhatsApp</div>
+          <div style="font-size:14px;font-weight:700;color:#25D366;font-family:'Outfit',monospace;letter-spacing:0.02em;">0895-3420-72060</div>
+        </div>
+        <div style="margin-left:auto;font-size:18px;color:rgba(37,211,102,0.5);">→</div>
+      </a>
+      <p style="margin-top:12px;font-size:12px;">Sertakan <strong>nama</strong>, <strong>kode unik</strong>, dan <strong>screenshot</strong> hasil spin saat menghubungi kami untuk penanganan lebih cepat.</p>
+    </div>
+
     <!-- CTA -->
     <div class="about-cta">
       <button class="about-cta-btn" onclick="closeAboutPage()">
@@ -5996,25 +6000,6 @@ function closeAboutPage() {
 
   </div>
 </div>
-
-<script>
-// Populate prize chips on about page from DRAW_PRIZES
-(function() {
-  function tryFillChips() {
-    if (typeof DRAW_PRIZES === 'undefined') { setTimeout(tryFillChips, 300); return; }
-    const container = document.getElementById('aboutPrizeChips');
-    if (!container) return;
-    container.innerHTML = '';
-    DRAW_PRIZES.forEach(function(p) {
-      const chip = document.createElement('div');
-      chip.className = 'about-prize-chip';
-      chip.innerHTML = '<span style="width:10px;height:10px;border-radius:3px;background:' + p.color + ';flex-shrink:0;display:inline-block;"></span>' + p.label;
-      container.appendChild(chip);
-    });
-  }
-  tryFillChips();
-})();
-</script>
 
 </body>
 </html>
