@@ -13,6 +13,8 @@
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    /* MOBILE FIX: cegah semua elemen melebihi lebar viewport */
+    img, video, canvas, svg, iframe, table { max-width: 100%; }
 
     /* ── DARK MODE (default) ── */
     :root, [data-theme="dark"] {
@@ -110,11 +112,13 @@
     /* ── LEADERBOARD ── */
     .lb-panel {
       width: 100%;
+      max-width: 100%;
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
       overflow: hidden;
       animation: fadeUp 0.8s 0.7s ease both;
+      box-sizing: border-box;
     }
     .lb-header {
       padding: 16px 24px;
@@ -317,6 +321,7 @@
       width: 100%;
       align-items: start;
     }
+    .main-grid > * { min-width: 0; }
     @media (max-width: 820px) {
       .main-grid { grid-template-columns: 1fr; gap: 20px; }
     }
@@ -328,6 +333,8 @@
       align-items: center;
       gap: 24px;
       animation: fadeUp 0.8s 0.2s ease both;
+      min-width: 0;
+      width: 100%;
     }
     .wheel-wrapper {
       position: relative;
@@ -387,6 +394,8 @@
       border-radius: 20px;
       overflow: hidden;
       animation: fadeUp 0.8s 0.4s ease both;
+      width: 100%;
+      box-sizing: border-box;
     }
     .panel-header {
       padding: 20px 24px;
@@ -419,6 +428,9 @@
       margin-bottom: 16px;
       padding: 8px 12px;
       border-radius: 8px;
+      width: 100%;
+      box-sizing: border-box;
+      overflow: hidden;
     }
     .conn-status.ok      { background: rgba(0,200,83,0.08);   color: #00C853; border: 1px solid rgba(0,200,83,0.2); }
     .conn-status.error   { background: rgba(123,47,255,0.08); color: var(--red); border: 1px solid rgba(123,47,255,0.2); }
@@ -520,6 +532,8 @@
       gap: 6px;
       max-height: 120px;
       overflow-y: auto;
+      overflow-x: hidden;
+      width: 100%;
     }
     .used-chip {
       font-size: 11px;
@@ -535,8 +549,8 @@
     }
 
     /* ── PRIZES ── */
-    .prizes-section { animation: fadeUp 0.8s 0.6s ease both; }
-    .prizes-list { display: flex; flex-direction: column; gap: 8px; }
+    .prizes-section { animation: fadeUp 0.8s 0.6s ease both; width: 100%; }
+    .prizes-list { display: flex; flex-direction: column; gap: 8px; width: 100%; }
     .prize-row {
       display: flex;
       align-items: center;
@@ -2717,7 +2731,7 @@
       </div>
 
       <!-- RIGHT PANEL -->
-      <div>
+      <div style="min-width:0;width:100%;">
         <div class="panel">
           <div class="panel-header">
             <div class="panel-icon">🔑</div>
@@ -3638,21 +3652,36 @@ function drawWheel(angle = 0, boostMode = false, redBoostMode = false) {
       wheelCtx.restore();
     }
 
-    // Label text — ukuran font mengikuti skala canvas
+    // Label text — clip ke segmen, pakai maxWidth agar tidak overflow
     wheelCtx.save();
+    // Clip hanya di dalam segmen ini
+    wheelCtx.beginPath();
+    wheelCtx.moveTo(cx, cy);
+    wheelCtx.arc(cx, cy, r - 2, start, start + slice);
+    wheelCtx.closePath();
+    wheelCtx.clip();
+
     wheelCtx.translate(cx, cy);
     wheelCtx.rotate(start + slice / 2);
-    wheelCtx.textAlign  = 'right';
-    wheelCtx.fillStyle  = '#fff';
+    wheelCtx.textAlign   = 'right';
+    wheelCtx.fillStyle   = '#fff';
     wheelCtx.shadowColor = redBoostMode ? 'rgba(255,80,0,0.9)' : (boostMode ? 'rgba(0,220,255,0.9)' : 'rgba(0,0,0,0.8)');
+
+    // Ruang teks tersedia = r - hubR - padding
+    const textRoom = r - hubR - Math.round(8 * scale);
+
+    const parts = prize.label.split(' ');
+    const emoji = parts[0];
+    const rest  = parts.slice(1).join(' ');
 
     wheelCtx.font       = `bold ${fontSize1}px Outfit`;
     wheelCtx.shadowBlur = (boostMode || redBoostMode) ? 8 : 4;
-    wheelCtx.fillText(prize.label.split(' ')[0], r - textOff1, 6);
-
+    // Gambar emoji
+    wheelCtx.fillText(emoji, r - Math.round(6 * scale), -Math.round(3 * scale), Math.round(28 * scale));
+    // Gambar teks dengan maxWidth agar tidak overflow
     wheelCtx.font       = `bold ${fontSize2}px Outfit`;
     wheelCtx.shadowBlur = (boostMode || redBoostMode) ? 6 : 3;
-    wheelCtx.fillText(prize.label.replace(/^\S+\s/, ''), r - textOff2, 6);
+    wheelCtx.fillText(rest, r - Math.round(8 * scale) - Math.round(22 * scale), Math.round(9 * scale), textRoom - Math.round(22 * scale));
     wheelCtx.restore();
 
     start += slice;
@@ -3698,7 +3727,22 @@ function drawWheel(angle = 0, boostMode = false, redBoostMode = false) {
 }
 
 // Set canvas size dulu sebelum drawWheel pertama
-resizeWheelCanvas();
+// Delay sedikit agar layout browser sudah settle sebelum baca clientWidth
+function initWheelSize() {
+  // Coba langsung dulu
+  const wrapper = document.getElementById('wheelWrapper');
+  if (wrapper && wrapper.clientWidth > 10) {
+    resizeWheelCanvas();
+  } else {
+    // Belum siap, coba lagi setelah layout
+    requestAnimationFrame(() => setTimeout(resizeWheelCanvas, 50));
+  }
+}
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initWheelSize);
+} else {
+  initWheelSize();
+}
 drawWheel();
 
 function renderPrizeList() {
