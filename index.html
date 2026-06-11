@@ -353,12 +353,13 @@
       position: absolute;
       top: 50%; left: 50%;
       transform: translate(-50%, -50%);
-      width: 70px; height: 70px;
+      width: clamp(52px, 18.5%, 70px);
+      height: clamp(52px, 18.5%, 70px);
       border-radius: 50%;
       border: none;
       cursor: pointer;
       font-family: 'Black Han Sans', sans-serif;
-      font-size: 13px;
+      font-size: clamp(10px, 3.5%, 13px);
       letter-spacing: 0.05em;
       color: var(--bg);
       background: linear-gradient(135deg, #00CFFF, #7B2FFF);
@@ -2318,10 +2319,11 @@
     .about-page-inner {
       max-width: 760px;
       margin: 0 auto;
-      padding: 32px 20px 80px;
+      padding: 20px 14px 80px;
       position: relative;
       z-index: 1;
     }
+    @media (min-width: 480px) { .about-page-inner { padding: 32px 20px 80px; } }
 
     /* back bar */
     .about-back-bar {
@@ -2407,9 +2409,10 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 20px;
-      padding: 24px 26px;
-      margin-bottom: 16px;
+      padding: 20px 16px;
+      margin-bottom: 14px;
     }
+    @media (min-width: 480px) { .about-section { padding: 24px 26px; } }
     .about-section-title {
       display: flex;
       align-items: center;
@@ -2443,7 +2446,7 @@
     /* info grid */
     .about-info-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
       gap: 12px;
       margin-top: 16px;
     }
@@ -2838,7 +2841,7 @@
     </div>
 
     <!-- Boost Info Banner -->
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:32px;">
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-bottom:32px;">
 
       <!-- Electric Boost -->
       <div style="background:linear-gradient(135deg,rgba(0,207,255,0.08),rgba(0,100,255,0.05));
@@ -3526,11 +3529,46 @@ function setConnStatus(type, text) {
 const wheelCanvas = document.getElementById('wheel');
 const wheelCtx    = wheelCanvas.getContext('2d'); // BUG FIX: ganti nama dari 'ctx' → 'wheelCtx' agar tidak bertabrakan dengan Audio ctx
 
+// ─── RESPONSIVE CANVAS RESIZE ────────────────────────
+// BUG FIX MOBILE: Canvas width/height attribute harus sama dengan ukuran CSS
+// agar text dan barrier tidak "keluar" di layar kecil.
+function resizeWheelCanvas() {
+  const wrapper = document.getElementById('wheelWrapper');
+  const size    = wrapper.clientWidth;          // ukuran CSS aktual
+  if (size < 10) return;                        // belum siap
+  if (wheelCanvas.width === size && wheelCanvas.height === size) return; // sudah benar
+  wheelCanvas.width  = size;
+  wheelCanvas.height = size;
+  const ghost = document.getElementById('hintGhost');
+  if (ghost) { ghost.width = size; ghost.height = size; }
+  // Gambar ulang roda setelah resize
+  drawWheel(typeof currentAngle !== 'undefined' ? currentAngle : 0,
+            typeof isBoostActive !== 'undefined' ? isBoostActive : false,
+            typeof isRedBoostActive !== 'undefined' ? isRedBoostActive : false);
+}
+
+// Jalankan resize saat halaman load dan saat layar berubah ukuran
+window.addEventListener('load',   resizeWheelCanvas);
+window.addEventListener('resize', resizeWheelCanvas);
+// ResizeObserver untuk mendeteksi perubahan wrapper lebih akurat
+if (window.ResizeObserver) {
+  new ResizeObserver(resizeWheelCanvas).observe(document.getElementById('wheelWrapper'));
+}
+
 function drawWheel(angle = 0, boostMode = false, redBoostMode = false) {
   const W = wheelCanvas.width, H = wheelCanvas.height;
   const cx = W / 2, cy = H / 2, r = W / 2 - 6;
   wheelCtx.clearRect(0, 0, W, H);
   let start = angle;
+
+  // Skala font dan hub proporsional terhadap ukuran canvas
+  // Canvas referensi = 500px → skala = W/500
+  const scale    = W / 500;
+  const fontSize1 = Math.max(10, Math.round(20 * scale)); // teks baris 1
+  const fontSize2 = Math.max(8,  Math.round(14 * scale)); // teks baris 2
+  const hubR     = Math.max(20, Math.round(44 * scale));  // jari-jari hub tengah
+  const textOff1 = Math.round(10 * scale);  // offset dari tepi luar (baris 1)
+  const textOff2 = Math.round(36 * scale);  // offset dari tepi luar (baris 2)
 
   // Saat boost: warnai ulang slice menjadi gradasi biru-elektrik
   // Saat red boost: gradasi merah-api
@@ -3590,7 +3628,7 @@ function drawWheel(angle = 0, boostMode = false, redBoostMode = false) {
       wheelCtx.restore();
     }
 
-    // Label text
+    // Label text — ukuran font mengikuti skala canvas
     wheelCtx.save();
     wheelCtx.translate(cx, cy);
     wheelCtx.rotate(start + slice / 2);
@@ -3598,28 +3636,28 @@ function drawWheel(angle = 0, boostMode = false, redBoostMode = false) {
     wheelCtx.fillStyle  = '#fff';
     wheelCtx.shadowColor = redBoostMode ? 'rgba(255,80,0,0.9)' : (boostMode ? 'rgba(0,220,255,0.9)' : 'rgba(0,0,0,0.8)');
 
-    wheelCtx.font       = 'bold 20px Outfit';
+    wheelCtx.font       = `bold ${fontSize1}px Outfit`;
     wheelCtx.shadowBlur = (boostMode || redBoostMode) ? 8 : 4;
-    wheelCtx.fillText(prize.label.split(' ')[0], r - 10, 6);
+    wheelCtx.fillText(prize.label.split(' ')[0], r - textOff1, 6);
 
-    wheelCtx.font       = 'bold 14px Outfit';
+    wheelCtx.font       = `bold ${fontSize2}px Outfit`;
     wheelCtx.shadowBlur = (boostMode || redBoostMode) ? 6 : 3;
-    wheelCtx.fillText(prize.label.replace(/^\S+\s/, ''), r - 36, 6);
+    wheelCtx.fillText(prize.label.replace(/^\S+\s/, ''), r - textOff2, 6);
     wheelCtx.restore();
 
     start += slice;
   });
 
-  // Centre hub
+  // Centre hub — ukuran mengikuti skala canvas
   wheelCtx.beginPath();
-  wheelCtx.arc(cx, cy, 44, 0, Math.PI * 2);
+  wheelCtx.arc(cx, cy, hubR, 0, Math.PI * 2);
   if (redBoostMode) {
-    const hubGrad = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, 44);
+    const hubGrad = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, hubR);
     hubGrad.addColorStop(0, '#1A0500');
     hubGrad.addColorStop(1, '#330800');
     wheelCtx.fillStyle = hubGrad;
   } else if (boostMode) {
-    const hubGrad = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, 44);
+    const hubGrad = wheelCtx.createRadialGradient(cx, cy, 0, cx, cy, hubR);
     hubGrad.addColorStop(0, '#001A33');
     hubGrad.addColorStop(1, '#003366');
     wheelCtx.fillStyle = hubGrad;
@@ -3648,6 +3686,9 @@ function drawWheel(angle = 0, boostMode = false, redBoostMode = false) {
   wheelCtx.stroke();
   wheelCtx.shadowBlur = 0;
 }
+
+// Set canvas size dulu sebelum drawWheel pertama
+resizeWheelCanvas();
 drawWheel();
 
 function renderPrizeList() {
@@ -5963,7 +6004,7 @@ function closeAboutPage() {
                     font-size:20px;flex-shrink:0;">✉️</div>
         <div>
           <div style="font-size:11px;font-weight:700;letter-spacing:0.1em;color:var(--muted);text-transform:uppercase;margin-bottom:3px;">Customer Help</div>
-          <div style="font-size:14px;font-weight:700;color:#00C853;font-family:'Outfit',monospace;letter-spacing:0.02em;">customerhelpsourcecrocs@gmail.com</div>
+          <div style="font-size:13px;font-weight:700;color:#00C853;font-family:'Outfit',monospace;letter-spacing:0.02em;word-break:break-all;">customerhelpsourcecrocs@gmail.com</div>
         </div>
         <div style="margin-left:auto;font-size:18px;color:rgba(0,200,83,0.5);">→</div>
       </a>
