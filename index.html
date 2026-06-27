@@ -90,10 +90,9 @@
       gap: 10px;
       padding: 10px 18px;
       border-radius: 12px;
-      background: linear-gradient(135deg, rgba(255,180,0,0.1), rgba(255,100,0,0.08));
-      border: 1px solid rgba(255,180,0,0.35);
       animation: fadeDown 0.6s ease both;
       position: relative;
+      transition: background 0.3s, border-color 0.3s;
     }
     .announce-bar.show { display: flex; }
     .announce-icon { font-size: 18px; flex-shrink: 0; }
@@ -104,10 +103,105 @@
       border-radius: 6px; flex-shrink: 0; transition: color 0.2s;
     }
     .announce-close:hover { color: var(--text); }
-    [data-theme="light"] .announce-bar {
+
+    /* Tipe: INFO (biru netral) — default */
+    .announce-bar.type-info {
+      background: linear-gradient(135deg, rgba(0,180,255,0.1), rgba(0,120,255,0.08));
+      border: 1px solid rgba(0,180,255,0.35);
+    }
+    [data-theme="light"] .announce-bar.type-info {
+      background: linear-gradient(135deg, rgba(0,150,255,0.12), rgba(0,100,255,0.08));
+      border-color: rgba(0,120,220,0.3);
+    }
+
+    /* Tipe: WARNING (kuning/oranye peringatan) */
+    .announce-bar.type-warning {
+      background: linear-gradient(135deg, rgba(255,180,0,0.1), rgba(255,100,0,0.08));
+      border: 1px solid rgba(255,180,0,0.35);
+    }
+    [data-theme="light"] .announce-bar.type-warning {
       background: linear-gradient(135deg, rgba(255,160,0,0.12), rgba(255,80,0,0.08));
       border-color: rgba(200,100,0,0.3);
     }
+
+    /* Tipe: PROMO (ungu-pink hype) */
+    .announce-bar.type-promo {
+      background: linear-gradient(135deg, rgba(180,0,255,0.12), rgba(255,0,150,0.1));
+      border: 1px solid rgba(220,0,255,0.4);
+    }
+    .announce-bar.type-promo .announce-text { color: #fff; }
+    [data-theme="light"] .announce-bar.type-promo {
+      background: linear-gradient(135deg, rgba(160,0,220,0.14), rgba(255,0,140,0.1));
+      border-color: rgba(180,0,220,0.35);
+    }
+    [data-theme="light"] .announce-bar.type-promo .announce-text { color: var(--text); }
+
+    /* Tipe: SUCCESS (hijau — kabar baik, event berhasil, dsb) */
+    .announce-bar.type-success {
+      background: linear-gradient(135deg, rgba(0,200,83,0.12), rgba(0,150,60,0.08));
+      border: 1px solid rgba(0,200,83,0.4);
+    }
+    [data-theme="light"] .announce-bar.type-success {
+      background: linear-gradient(135deg, rgba(0,180,80,0.14), rgba(0,140,60,0.08));
+      border-color: rgba(0,150,60,0.3);
+    }
+
+    /* Tipe: DANGER (merah — peringatan keras / urgent) */
+    .announce-bar.type-danger {
+      background: linear-gradient(135deg, rgba(255,40,40,0.14), rgba(200,0,0,0.1));
+      border: 1px solid rgba(255,40,40,0.45);
+      animation: fadeDown 0.6s ease both, dangerPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes dangerPulse {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(255,40,40,0); }
+      50%      { box-shadow: 0 0 0 4px rgba(255,40,40,0.12); }
+    }
+    [data-theme="light"] .announce-bar.type-danger {
+      background: linear-gradient(135deg, rgba(255,20,20,0.12), rgba(180,0,0,0.08));
+      border-color: rgba(220,0,0,0.35);
+    }
+
+    /* Tipe: EVENT (emas — spesial/event besar) */
+    .announce-bar.type-event {
+      background: linear-gradient(135deg, rgba(255,200,0,0.14), rgba(255,140,0,0.1));
+      border: 1px solid rgba(255,200,0,0.45);
+    }
+    [data-theme="light"] .announce-bar.type-event {
+      background: linear-gradient(135deg, rgba(255,180,0,0.16), rgba(255,120,0,0.1));
+      border-color: rgba(220,150,0,0.35);
+    }
+
+    /* Tombol aksi di dalam banner (link/CTA opsional) */
+    .announce-action-btn {
+      flex-shrink: 0;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.1);
+      color: var(--text);
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .announce-action-btn:hover {
+      background: rgba(255,255,255,0.2);
+      transform: translateY(-1px);
+    }
+    [data-theme="light"] .announce-action-btn {
+      border-color: rgba(0,0,0,0.18);
+      background: rgba(0,0,0,0.05);
+      color: var(--text);
+    }
+    [data-theme="light"] .announce-action-btn:hover { background: rgba(0,0,0,0.1); }
+
 
     /* ── LEADERBOARD ── */
     .lb-panel {
@@ -169,8 +263,94 @@
       margin-top: 8px; padding: 10px 14px; border-radius: 8px;
       background: rgba(255,180,0,0.08); border: 1px solid rgba(255,180,0,0.25);
       font-size: 13px; color: var(--text); line-height: 1.5; display: none;
+      transition: background 0.25s, border-color 0.25s;
     }
     .admin-announce-preview.show { display: block; }
+    .admin-announce-preview.type-info    { background: rgba(0,180,255,0.08);  border-color: rgba(0,180,255,0.25); }
+    .admin-announce-preview.type-warning { background: rgba(255,180,0,0.08);  border-color: rgba(255,180,0,0.25); }
+    .admin-announce-preview.type-promo   { background: rgba(200,0,255,0.1);   border-color: rgba(220,0,255,0.3); }
+
+    /* Admin: pemilih tipe banner */
+    .announce-type-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .announce-type-btn {
+      flex: 1; min-width: 90px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: var(--bg2);
+      color: var(--muted);
+      font-family: 'Outfit', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .announce-type-btn:hover { color: var(--text); }
+    .announce-type-btn.active[data-type="info"] {
+      background: rgba(0,180,255,0.12); border-color: rgba(0,180,255,0.5); color: #00BFFF;
+    }
+    .announce-type-btn.active[data-type="warning"] {
+      background: rgba(255,180,0,0.12); border-color: rgba(255,180,0,0.5); color: #FFB300;
+    }
+    .announce-type-btn.active[data-type="promo"] {
+      background: rgba(200,0,255,0.14); border-color: rgba(220,0,255,0.55); color: #E040FB;
+    }
+    .announce-type-btn.active[data-type="success"] {
+      background: rgba(0,200,83,0.14); border-color: rgba(0,200,83,0.55); color: #00E091;
+    }
+    .announce-type-btn.active[data-type="danger"] {
+      background: rgba(255,40,40,0.14); border-color: rgba(255,40,40,0.55); color: #FF5252;
+    }
+    .announce-type-btn.active[data-type="event"] {
+      background: rgba(255,200,0,0.14); border-color: rgba(255,200,0,0.55); color: #FFD740;
+    }
+
+    /* Admin: input link/CTA banner */
+    .announce-link-row {
+      display: flex; gap: 8px; flex-wrap: wrap;
+    }
+    .announce-link-row input {
+      flex: 1; min-width: 140px;
+      background: var(--bg2); border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 8px 12px; font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--text);
+      outline: none; transition: border-color 0.2s;
+    }
+    .announce-link-row input:focus { border-color: rgba(0,180,255,0.5); }
+
+    /* Admin: input jadwal otomatis */
+    .announce-schedule-box {
+      display: flex; flex-direction: column; gap: 8px;
+      padding: 12px; border-radius: 10px;
+      background: var(--bg2); border: 1px solid var(--border);
+    }
+    .announce-schedule-row {
+      display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    }
+    .announce-schedule-row label {
+      font-size: 11px; font-weight: 700; color: var(--muted); min-width: 70px;
+    }
+    .announce-schedule-row input[type="datetime-local"] {
+      flex: 1; min-width: 160px;
+      background: var(--surface); border: 1.5px solid var(--border); border-radius: 8px;
+      padding: 7px 10px; font-family: 'Outfit', sans-serif; font-size: 12px; color: var(--text);
+      outline: none; transition: border-color 0.2s;
+      color-scheme: dark;
+    }
+    [data-theme="light"] .announce-schedule-row input[type="datetime-local"] { color-scheme: light; }
+    .announce-schedule-row input[type="datetime-local"]:focus { border-color: rgba(0,180,255,0.5); }
+    .announce-schedule-clear {
+      background: none; border: none; color: var(--muted);
+      cursor: pointer; font-size: 11px; text-decoration: underline; padding: 2px 4px;
+    }
+    .announce-schedule-clear:hover { color: var(--text); }
+    .announce-schedule-status {
+      font-size: 11px; font-weight: 600; padding: 6px 10px; border-radius: 6px;
+      display: none;
+    }
+    .announce-schedule-status.show { display: block; }
+    .announce-schedule-status.scheduled { background: rgba(0,180,255,0.1); color: #00BFFF; }
+    .announce-schedule-status.expired   { background: rgba(255,40,40,0.1); color: #FF5252; }
+    .announce-schedule-status.active    { background: rgba(0,200,83,0.1); color: #00E091; }
     .admin-toggle-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
     .admin-toggle-label { font-size: 12px; color: var(--muted); font-weight: 600; }
     .toggle-switch {
@@ -814,6 +994,11 @@
 
     /* ── KEYFRAMES ── */
     @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes promoGlow {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(220,0,255,0); }
+      50%      { box-shadow: 0 0 16px 1px rgba(220,0,255,0.25); }
+    }
+    .announce-bar.type-promo { animation: fadeDown 0.6s ease both, promoGlow 2.4s ease-in-out infinite; }
     @keyframes fadeUp   { from { opacity: 0; transform: translateY(20px);  } to { opacity: 1; transform: translateY(0); } }
 
     /* ── S&K OVERLAY ── */
@@ -2694,8 +2879,9 @@
 
     <!-- ANNOUNCEMENT BANNER (admin-controlled) -->
     <div class="announce-bar" id="announceBanner">
-      <span class="announce-icon">📢</span>
+      <span class="announce-icon" id="announceIcon">📢</span>
       <div class="announce-text" id="announceText">Selamat datang!</div>
+      <a class="announce-action-btn" id="announceActionBtn" href="#" target="_blank" rel="noopener" style="display:none;"></a>
       <button class="announce-close" onclick="dismissAnnounce()" title="Tutup">✕</button>
     </div>
 
@@ -3127,16 +3313,60 @@
                        padding:10px 14px;font-family:Outfit,sans-serif;font-size:13px;color:var(--text);
                        outline:none;resize:vertical;min-height:60px;"
                 placeholder="Tulis pesan pengumuman untuk peserta..."></textarea>
+
+              <div class="announce-type-row" id="announceTypeRow">
+                <button type="button" class="announce-type-btn" data-type="info" onclick="selectAnnounceType('info')">
+                  ℹ️ Info
+                </button>
+                <button type="button" class="announce-type-btn" data-type="warning" onclick="selectAnnounceType('warning')">
+                  ⚠️ Warning
+                </button>
+                <button type="button" class="announce-type-btn" data-type="promo" onclick="selectAnnounceType('promo')">
+                  🎉 Promo
+                </button>
+                <button type="button" class="announce-type-btn" data-type="success" onclick="selectAnnounceType('success')">
+                  ✅ Success
+                </button>
+                <button type="button" class="announce-type-btn" data-type="danger" onclick="selectAnnounceType('danger')">
+                  🚨 Danger
+                </button>
+                <button type="button" class="announce-type-btn" data-type="event" onclick="selectAnnounceType('event')">
+                  🏆 Event
+                </button>
+              </div>
+
+              <div class="admin-title" style="font-size:12px;margin-top:6px;margin-bottom:0;">🔗 Tombol Aksi (opsional)</div>
+              <div class="announce-link-row">
+                <input type="text" id="announceLinkLabel" placeholder="Label tombol (cth: Chat WA)" maxlength="24">
+                <input type="url" id="announceLinkUrl" placeholder="https://wa.me/62812xxxxxxx">
+              </div>
+              <div class="hint" style="margin-top:0;">💡 Kosongkan salah satu untuk menyembunyikan tombol aksi di banner</div>
+
+              <div class="admin-title" style="font-size:12px;margin-top:6px;margin-bottom:0;">⏰ Jadwal Otomatis (opsional)</div>
+              <div class="announce-schedule-box">
+                <div class="announce-schedule-row">
+                  <label>Mulai:</label>
+                  <input type="datetime-local" id="announceStartAt">
+                </div>
+                <div class="announce-schedule-row">
+                  <label>Berakhir:</label>
+                  <input type="datetime-local" id="announceEndAt">
+                  <button type="button" class="announce-schedule-clear" onclick="clearAnnounceSchedule()">Hapus jadwal</button>
+                </div>
+                <div class="announce-schedule-status" id="announceScheduleStatus"></div>
+                <div class="hint" style="margin-top:0;">💡 Kosongkan kedua kolom untuk kontrol manual via toggle saja. Kalau diisi, banner otomatis tampil/hilang sesuai waktu — toggle tetap jadi saklar utama (off = selalu mati).</div>
+              </div>
+
               <div class="admin-toggle-row">
                 <div class="admin-toggle-label">Tampilkan banner:</div>
                 <div class="toggle-switch" id="announceToggle" onclick="toggleAnnounce()">
                   <div class="toggle-knob"></div>
                 </div>
-                <button class="admin-btn" style="padding:8px 14px; font-size:12px;" onclick="saveAnnounce()">💾 Simpan</button>
+                <button class="admin-btn" style="padding:8px 14px; font-size:12px;" onclick="saveAnnounce(this)">💾 Simpan</button>
               </div>
             </div>
             <div class="admin-announce-preview" id="announcePreview"></div>
-            <div class="hint" style="margin-top:4px;">💡 Pesan muncul di bawah countdown event</div>
+            <div class="hint" style="margin-top:4px;">💡 Pesan muncul di bawah countdown event • Pilih tipe untuk warna &amp; ikon berbeda</div>
           </div>
         </div>
 
@@ -3304,7 +3534,7 @@
 // ═══════════════════════════════════════════════════
 //  ⚠️  GANTI URL INI DENGAN URL DEPLOYMENT APPS SCRIPT
 // ═══════════════════════════════════════════════════
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzzB4ntM1qopiYk02rZ1C1Vy1vHfquj9xYg43-ToF7FmtpfQJ0DZDaucwdTURqTH1u6hQ/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxWGR5H0S7ZNBiAiWUSREDit7UGtX1Yd3wnon88oYKnLboKBnYj-QgxImCFNx4A2Dpx4g/exec";
 
 // ⚠️  GANTI PASSWORD DAN NOMOR WA SESUAI KEBUTUHAN
 const ADMIN_PASSWORD = 'tegar';
@@ -3395,7 +3625,11 @@ function checkRateLimit(action) {
 // (Kompatibel dengan Google Apps Script yang tidak support CORS)
 function apiCall(params) {
   return new Promise((resolve) => {
-    const cbName = 'cb_' + Date.now();
+    // BUG FIX: Date.now() saja bisa menghasilkan nama callback yang sama
+    // kalau dua apiCall terpanggil di milidetik yang sama (misal toggle
+    // diklik lalu langsung Simpan dengan cepat), sehingga callback yang
+    // satu menimpa yang lain dan salah satu request "hilang" responsnya.
+    const cbName = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8);
     params.callback = cbName;
     const url    = SCRIPT_URL + '?' + new URLSearchParams(params).toString();
     const script = document.createElement('script');
@@ -4431,15 +4665,11 @@ async function openAdminModal() {
   document.getElementById('adminModalOverlay').classList.add('show');
   await refreshAdminPanel();
   renderAdminLeaderboard();
-  // Sync announce toggle
-  const active = localStorage.getItem('announceActive') === '1';
-  const msg    = localStorage.getItem('announceMsg') || '';
-  const inp    = document.getElementById('announceInput');
-  const toggle = document.getElementById('announceToggle');
-  const prev   = document.getElementById('announcePreview');
-  if (inp)    inp.value = msg;
-  if (toggle) toggle.classList.toggle('on', active);
-  if (prev)  { prev.textContent = msg; prev.classList.toggle('show', !!msg); }
+  // BUG FIX: dulu sync announce toggle baca dari localStorage (data lama,
+  // selalu kosong karena sudah migrasi ke Google Sheets) sehingga menimpa
+  // toggle yang sudah benar dari loadAnnounce() dan banner jadi "mati" lagi
+  // setiap admin panel dibuka. Sekarang ambil ulang dari backend.
+  await loadAnnounce();
 }
 function closeAdminModal() {
   document.getElementById('adminModalOverlay').classList.remove('show');
@@ -4750,29 +4980,183 @@ initTheme();
 
 // ─── ANNOUNCEMENT BANNER (Google Sheets — permanen) ──
 const ANNOUNCE_DISMISSED = 'announceDismissed';
+const ANNOUNCE_TYPES = {
+  info:    { icon: 'ℹ️', label: 'Info' },
+  warning: { icon: '⚠️', label: 'Warning' },
+  promo:   { icon: '🎉', label: 'Promo' },
+  success: { icon: '✅', label: 'Success' },
+  danger:  { icon: '🚨', label: 'Danger' },
+  event:   { icon: '🏆', label: 'Event' },
+};
+let currentAnnounceType = 'info'; // dipilih lewat tombol di admin panel
+let announceScheduleTimer = null; // re-evaluasi jadwal tiap menit tanpa perlu reload
 
-async function loadAnnounce() {
-  const res = await apiCall({ action: 'announce_get' });
-  const msg     = (res.success && res.msg)    ? res.msg    : '';
-  const active  = (res.success && res.active) ? true       : false;
+function selectAnnounceType(type) {
+  if (!ANNOUNCE_TYPES[type]) return;
+  currentAnnounceType = type;
+  document.querySelectorAll('.announce-type-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.type === type);
+  });
+  // Update preview langsung agar admin lihat hasilnya sebelum simpan
+  const prev = document.getElementById('announcePreview');
+  if (prev) {
+    prev.className = 'admin-announce-preview' + (prev.classList.contains('show') ? ' show' : '') + ' type-' + type;
+  }
+}
+
+function applyAnnounceType(bar, icon, type) {
+  // Bersihkan class tipe lama, pasang yang baru. Fallback ke 'info' kalau
+  // tipe tidak dikenali (misal backend lama belum kirim field type, atau
+  // tipe baru ditambahkan di versi yang lebih baru dari yang tersimpan).
+  const safeType = ANNOUNCE_TYPES[type] ? type : 'info';
+  Object.keys(ANNOUNCE_TYPES).forEach(t => bar.classList.remove('type-' + t));
+  bar.classList.add('type-' + safeType);
+  if (icon) icon.textContent = ANNOUNCE_TYPES[safeType].icon;
+  return safeType;
+}
+
+// Cek apakah waktu sekarang berada di dalam jendela jadwal (startAt/endAt).
+// Kosong/tidak diisi dianggap "tidak ada batasan" pada sisi itu, sehingga
+// admin bisa isi hanya salah satu (misal cuma set kapan banner berakhir).
+function isWithinSchedule(startAt, endAt) {
+  const now = new Date();
+  if (startAt) {
+    const start = new Date(startAt);
+    if (!isNaN(start) && now < start) return { within: false, phase: 'before' };
+  }
+  if (endAt) {
+    const end = new Date(endAt);
+    if (!isNaN(end) && now > end) return { within: false, phase: 'after' };
+  }
+  return { within: true, phase: 'active' };
+}
+
+function renderScheduleStatus(startAt, endAt) {
+  const el = document.getElementById('announceScheduleStatus');
+  if (!el) return;
+  if (!startAt && !endAt) { el.classList.remove('show'); return; }
+  const { within, phase } = isWithinSchedule(startAt, endAt);
+  el.classList.add('show');
+  if (phase === 'before') {
+    el.className = 'announce-schedule-status show scheduled';
+    el.textContent = '🕒 Belum mulai — banner akan tampil otomatis sesuai jadwal';
+  } else if (phase === 'after') {
+    el.className = 'announce-schedule-status show expired';
+    el.textContent = '⌛ Jadwal sudah berakhir — banner otomatis disembunyikan';
+  } else {
+    el.className = 'announce-schedule-status show active';
+    el.textContent = '✅ Sedang dalam jadwal aktif';
+  }
+}
+
+// Helper bersama untuk update tampilan banner + sync ke panel admin.
+// Dipakai oleh loadAnnounce (baca dari server) dan saveAnnounce/toggleAnnounce
+// (langsung dari data yang baru kita kirim, tanpa baca ulang ke server).
+function applyAnnounceUI(msg, active, type, opts) {
+  opts = opts || {};
+  const linkLabel = opts.linkLabel || '';
+  const linkUrl   = opts.linkUrl   || '';
+  const startAt   = opts.startAt   || '';
+  const endAt     = opts.endAt     || '';
+
   const dismissed = sessionStorage.getItem(ANNOUNCE_DISMISSED) === '1';
+  const bar    = document.getElementById('announceBanner');
+  const icon   = document.getElementById('announceIcon');
+  const text   = document.getElementById('announceText');
+  const action = document.getElementById('announceActionBtn');
+  const safeType = applyAnnounceType(bar, icon, type);
 
-  const bar  = document.getElementById('announceBanner');
-  const text = document.getElementById('announceText');
-  if (active && msg && !dismissed) {
+  // Toggle admin = saklar utama. Kalau ON dan jadwal diisi, jadwal yang
+  // menentukan tampil/tidaknya saat ini. Kalau jadwal kosong, ON = tampil.
+  const schedule = isWithinSchedule(startAt, endAt);
+  const shouldShow = active && msg && !dismissed && schedule.within;
+
+  if (shouldShow) {
     text.textContent = msg;
     bar.classList.add('show');
   } else {
     bar.classList.remove('show');
   }
 
-  // Sync ke admin panel
-  const inp    = document.getElementById('announceInput');
-  const toggle = document.getElementById('announceToggle');
-  const prev   = document.getElementById('announcePreview');
-  if (inp)    inp.value = msg;
-  if (toggle) toggle.classList.toggle('on', active);
-  if (prev)   { prev.textContent = msg; prev.classList.toggle('show', !!msg); }
+  if (action) {
+    if (linkLabel && linkUrl) {
+      action.textContent = linkLabel;
+      action.href = linkUrl;
+      action.style.display = 'inline-flex';
+    } else {
+      action.style.display = 'none';
+    }
+  }
+
+  const inp        = document.getElementById('announceInput');
+  const toggle      = document.getElementById('announceToggle');
+  const prev        = document.getElementById('announcePreview');
+  const linkLabelEl = document.getElementById('announceLinkLabel');
+  const linkUrlEl   = document.getElementById('announceLinkUrl');
+  const startEl     = document.getElementById('announceStartAt');
+  const endEl       = document.getElementById('announceEndAt');
+  if (inp)        inp.value = msg;
+  if (toggle)     toggle.classList.toggle('on', active);
+  if (linkLabelEl) linkLabelEl.value = linkLabel;
+  if (linkUrlEl)   linkUrlEl.value   = linkUrl;
+  if (startEl)     startEl.value     = startAt;
+  if (endEl)       endEl.value       = endAt;
+  if (prev) {
+    prev.textContent = msg;
+    prev.classList.toggle('show', !!msg);
+    Object.keys(ANNOUNCE_TYPES).forEach(t => prev.classList.remove('type-' + t));
+    prev.classList.add('type-' + safeType);
+  }
+  renderScheduleStatus(startAt, endAt);
+  selectAnnounceType(safeType);
+
+  // Evaluasi ulang jadwal tiap menit (tanpa perlu polling server) supaya
+  // banner otomatis muncul/hilang tepat waktu selama tab tetap terbuka.
+  if (announceScheduleTimer) clearInterval(announceScheduleTimer);
+  if (startAt || endAt) {
+    announceScheduleTimer = setInterval(() => {
+      applyAnnounceUI(msg, active, safeType, { linkLabel, linkUrl, startAt, endAt });
+    }, 60000);
+  }
+
+  return safeType;
+}
+
+function getAnnounceFormValues() {
+  return {
+    linkLabel: (document.getElementById('announceLinkLabel')?.value || '').trim(),
+    linkUrl:   (document.getElementById('announceLinkUrl')?.value   || '').trim(),
+    startAt:   document.getElementById('announceStartAt')?.value || '',
+    endAt:     document.getElementById('announceEndAt')?.value   || '',
+  };
+}
+
+function clearAnnounceSchedule() {
+  const startEl = document.getElementById('announceStartAt');
+  const endEl   = document.getElementById('announceEndAt');
+  if (startEl) startEl.value = '';
+  if (endEl)   endEl.value   = '';
+  renderScheduleStatus('', '');
+}
+
+async function loadAnnounce() {
+  const res = await apiCall({ action: 'announce_get' });
+  const msg = (res.success && res.msg) ? res.msg : '';
+  // BUG FIX: parsing 'active' lebih ketat — backend bisa mengirim string
+  // "false"/"0" yang truthy di JS kalau hanya dicek dengan if(res.active).
+  // Sekarang nilai falsy string juga dianggap false.
+  const rawActive = res.success ? res.active : false;
+  const active = !(rawActive === false || rawActive === undefined || rawActive === null ||
+                   rawActive === '' || rawActive === 'false' || rawActive === '0' || rawActive === 0);
+  // Tipe banner — backward compatible: kalau backend belum punya kolom 'type'
+  // (Apps Script lama), otomatis fallback ke 'info' tanpa error.
+  const type = (res.success && res.type) ? res.type : 'info';
+  applyAnnounceUI(msg, active, type, {
+    linkLabel: res.success ? (res.linkLabel || '') : '',
+    linkUrl:   res.success ? (res.linkUrl   || '') : '',
+    startAt:   res.success ? (res.startAt   || '') : '',
+    endAt:     res.success ? (res.endAt     || '') : '',
+  });
 }
 
 function dismissAnnounce() {
@@ -4780,28 +5164,103 @@ function dismissAnnounce() {
   document.getElementById('announceBanner').classList.remove('show');
 }
 
-async function saveAnnounce() {
+async function saveAnnounce(btnEl) {
   const msg    = (document.getElementById('announceInput').value || '').trim();
   const active = document.getElementById('announceToggle').classList.contains('on');
-  await apiCall({ action: 'announce_save', msg, active: active ? 'true' : 'false' });
+  const extra  = getAnnounceFormValues();
+  const res = await apiCall({
+    action: 'announce_save', msg, active: active ? 'true' : 'false', type: currentAnnounceType,
+    linkLabel: extra.linkLabel, linkUrl: extra.linkUrl, startAt: extra.startAt, endAt: extra.endAt,
+  });
+  if (!res || res.success === false) {
+    alert('Gagal menyimpan banner ke server. Coba lagi.');
+    return;
+  }
   sessionStorage.removeItem(ANNOUNCE_DISMISSED);
-  await loadAnnounce();
-  const btn  = event.target;
-  const orig = btn.textContent;
-  btn.textContent = '✓ Tersimpan!';
-  setTimeout(() => { btn.textContent = orig; }, 1500);
+  markAnnounceJustWritten();
+  // BUG FIX: sebelumnya di sini dipanggil loadAnnounce() untuk membaca ULANG
+  // data dari server segera setelah menyimpan. Tapi Google Apps Script tidak
+  // menjamin baca-setelah-tulis langsung konsisten antar request HTTP yang
+  // berbeda — pembacaan ulang yang terlalu cepat bisa mendapat data SEBELUM
+  // simpanan baru tercatat, sehingga toggle/banner kembali "mati" sendiri
+  // beberapa saat setelah disimpan. Karena kita sendiri yang baru mengirim
+  // data ini, tidak perlu tanya ulang ke server — update UI langsung dari
+  // apa yang baru kita simpan.
+  applyAnnounceUI(msg, active, currentAnnounceType, extra);
+  // BUG FIX: 'event' global jadi undefined setelah await di fungsi async,
+  // sehingga 'event.target' melempar error dan baris setelahnya (termasuk
+  // loadAnnounce() di atas — di versi lama dipanggil SETELAH baris ini —
+  // tidak pernah jalan. Sekarang elemen tombol dioper langsung dari onclick.
+  if (btnEl) {
+    const orig = btnEl.textContent;
+    btnEl.textContent = '✓ Tersimpan!';
+    setTimeout(() => { btnEl.textContent = orig; }, 1500);
+  }
 }
 
 async function toggleAnnounce() {
+  // BUG FIX: sebelumnya toggleAnnounce() mengirim apiCall lalu langsung
+  // panggil loadAnnounce(), yang membaca ULANG status dari server dan bisa
+  // menimpa toggle balik ke OFF kalau ada keterlambatan propagasi di sisi
+  // Google Apps Script (server kadang belum "lihat" tulisan yang baru saja
+  // dilakukan saat dibaca lagi terlalu cepat). Sekarang toggle hanya
+  // mengubah tampilan + menyimpan, lalu update UI dari data yang baru kita
+  // kirim sendiri — tidak ada read-back ke server yang bisa menimpa balik.
   const toggle = document.getElementById('announceToggle');
   const isOn   = toggle.classList.toggle('on');
   const msg    = (document.getElementById('announceInput').value || '').trim();
-  await apiCall({ action: 'announce_save', active: isOn ? 'true' : 'false', msg });
+  const extra  = getAnnounceFormValues();
+  const res = await apiCall({
+    action: 'announce_save', active: isOn ? 'true' : 'false', msg, type: currentAnnounceType,
+    linkLabel: extra.linkLabel, linkUrl: extra.linkUrl, startAt: extra.startAt, endAt: extra.endAt,
+  });
+  if (!res || res.success === false) {
+    // Gagal simpan ke server — kembalikan toggle ke posisi semula agar
+    // tampilan tidak bohong soal status yang sebenarnya tersimpan.
+    toggle.classList.toggle('on', !isOn);
+    alert('Gagal menyimpan status banner ke server. Coba lagi.');
+    return;
+  }
   sessionStorage.removeItem(ANNOUNCE_DISMISSED);
-  loadAnnounce();
+  markAnnounceJustWritten();
+  applyAnnounceUI(msg, isOn, currentAnnounceType, extra);
 }
 
 loadAnnounce();
+
+// Polling otomatis tiap 30 detik supaya perubahan admin langsung terlihat
+// ke user yang sedang membuka halaman, tanpa perlu refresh manual.
+// BUG FIX: polling dulu bisa "menimpa balik" banner/toggle yang baru saja
+// disimpan admin karena Google Apps Script tidak menjamin baca-setelah-tulis
+// konsisten instan. Sekarang ada cooldown 8 detik setelah admin menyimpan
+// — polling di-skip selama window itu, baru jalan lagi setelahnya.
+const ANNOUNCE_POLL_MS           = 30000;
+const ANNOUNCE_WRITE_COOLDOWN_MS = 8000;
+let announcePollTimer   = null;
+let lastAnnounceWriteAt = 0;
+
+function markAnnounceJustWritten() {
+  lastAnnounceWriteAt = Date.now();
+}
+
+async function loadAnnouncePolled() {
+  if (Date.now() - lastAnnounceWriteAt < ANNOUNCE_WRITE_COOLDOWN_MS) return;
+  await loadAnnounce();
+}
+
+function startAnnouncePolling() {
+  if (announcePollTimer) clearInterval(announcePollTimer);
+  announcePollTimer = setInterval(loadAnnouncePolled, ANNOUNCE_POLL_MS);
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    if (announcePollTimer) clearInterval(announcePollTimer);
+  } else {
+    loadAnnouncePolled();
+    startAnnouncePolling();
+  }
+});
+startAnnouncePolling();
 
 // ─── LEADERBOARD (Google Sheets — permanen) ──────────
 const LB_MAX_DISPLAY = 10;
