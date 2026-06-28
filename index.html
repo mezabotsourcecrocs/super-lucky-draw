@@ -3363,6 +3363,7 @@
                   <div class="toggle-knob"></div>
                 </div>
                 <button class="admin-btn" style="padding:8px 14px; font-size:12px;" onclick="saveAnnounce(this)">💾 Simpan</button>
+                <button class="admin-btn danger" style="padding:8px 14px; font-size:12px;" onclick="deleteAnnounce(this)" title="Hapus semua isi banner dan matikan">🗑 Hapus</button>
               </div>
             </div>
             <div class="admin-announce-preview" id="announcePreview"></div>
@@ -5178,22 +5179,50 @@ async function saveAnnounce(btnEl) {
   }
   sessionStorage.removeItem(ANNOUNCE_DISMISSED);
   markAnnounceJustWritten();
-  // BUG FIX: sebelumnya di sini dipanggil loadAnnounce() untuk membaca ULANG
-  // data dari server segera setelah menyimpan. Tapi Google Apps Script tidak
-  // menjamin baca-setelah-tulis langsung konsisten antar request HTTP yang
-  // berbeda — pembacaan ulang yang terlalu cepat bisa mendapat data SEBELUM
-  // simpanan baru tercatat, sehingga toggle/banner kembali "mati" sendiri
-  // beberapa saat setelah disimpan. Karena kita sendiri yang baru mengirim
-  // data ini, tidak perlu tanya ulang ke server — update UI langsung dari
-  // apa yang baru kita simpan.
   applyAnnounceUI(msg, active, currentAnnounceType, extra);
-  // BUG FIX: 'event' global jadi undefined setelah await di fungsi async,
-  // sehingga 'event.target' melempar error dan baris setelahnya (termasuk
-  // loadAnnounce() di atas — di versi lama dipanggil SETELAH baris ini —
-  // tidak pernah jalan. Sekarang elemen tombol dioper langsung dari onclick.
   if (btnEl) {
     const orig = btnEl.textContent;
     btnEl.textContent = '✓ Tersimpan!';
+    setTimeout(() => { btnEl.textContent = orig; }, 1500);
+  }
+}
+
+async function deleteAnnounce(btnEl) {
+  if (!confirm('Hapus banner pengumuman? Pesan, jadwal, dan tombol aksi akan dikosongkan dan banner dimatikan.')) return;
+  const res = await apiCall({
+    action: 'announce_save',
+    msg: '', active: 'false', type: 'info',
+    linkLabel: '', linkUrl: '', startAt: '', endAt: '',
+  });
+  if (!res || res.success === false) {
+    alert('Gagal menghapus banner. Coba lagi.');
+    return;
+  }
+  sessionStorage.removeItem(ANNOUNCE_DISMISSED);
+  markAnnounceJustWritten();
+  // Reset semua field form di admin panel
+  const inp = document.getElementById('announceInput');
+  const ll  = document.getElementById('announceLinkLabel');
+  const lu  = document.getElementById('announceLinkUrl');
+  const sa  = document.getElementById('announceStartAt');
+  const ea  = document.getElementById('announceEndAt');
+  const tog = document.getElementById('announceToggle');
+  const prv = document.getElementById('announcePreview');
+  const sts = document.getElementById('announceScheduleStatus');
+  if (inp) inp.value = '';
+  if (ll)  ll.value  = '';
+  if (lu)  lu.value  = '';
+  if (sa)  sa.value  = '';
+  if (ea)  ea.value  = '';
+  if (tog) tog.classList.remove('on');
+  if (prv) { prv.textContent = ''; prv.classList.remove('show'); }
+  if (sts) sts.textContent = '';
+  selectAnnounceType('info');
+  // Sembunyikan banner di halaman utama
+  document.getElementById('announceBanner').classList.remove('show');
+  if (btnEl) {
+    const orig = btnEl.textContent;
+    btnEl.textContent = '✓ Dihapus!';
     setTimeout(() => { btnEl.textContent = orig; }, 1500);
   }
 }
